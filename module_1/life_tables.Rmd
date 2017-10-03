@@ -13,7 +13,7 @@ output:
  
 #1.1 Life Table Components
  
-__Life tables__, also known as __mortality tables__, are a way to display the conditional probability that a person will die in a certain year given that they are a certain age. They often take into account many factors including gender, occupation, socioeconomic status, lifestyle habits, and more in order to predict how much longer a life is likely to last. Life tables are useful in a variety of fields, but a couple examples related to actuarial work are insurance companies using them to help price products, and government employees using them to predict financial expenses for Social Security. Typical life tables include similar summary information, and often appear like the one below.  
+__Life tables__, also known as __mortality tables__, are a way to display the conditional probability that a person will die in a certain year given that they are a certain age. They often take into account many factors including gender, occupation, socioeconomic status, lifestyle habits, and more in order to predict how much longer a life is likely to last. Life tables are used in a variety of fields. For example, actuaries use life tables in pricing insurance products or to predict financial expenses for Social Security. The following is an example of a life table.  
  &nbsp;
  
 *Figure 1.1. Example of Life Table*  
@@ -34,25 +34,27 @@ print(life.table, row.names = FALSE)
  
  
  
-The $x$ column represents the age of the person at the beginning of the year. The $lx$ column represents the expected number of people alive at the beginning of year $x$, which is mathematically expressed as $l_x$. The $dx$ column represents the number of people that died during year $x$, which is expressed as $d_x$.
+The x column represents the age of the person at the beginning of the year. The lx column represents the hypothetical number of people alive at the beginning of year $x$, which is denoted $l_x$. The dx column represents the number of people that died during year $x$, which is expressed as $d_x$.
  
-Before, we mentioned that a life table should display the conditional probability of survival given you are age $x$. While *Table 1.1* does not display that yet, we can calculate those probabilities easily.
+Before, we mentioned that a life table should display the conditional probability of survival given that a life is age $x$. While *Table 1.1* does not display that yet, those probabilities can be calculated easily.
  
-Let’s begin by focusing on a person that is 0 years old, or a newborn. We denote a person of age $x$ by putting the age inside parentheses. So, in this example, we denote a life of age 0 with (0). Suppose we want to find the probability that (0) survives their first year of life. It’s as simple as making sure we understand what the information in the life table means, and then taking advantage of the definitions of $l_x$ and $d_x$. 
+Let’s begin by focusing on a person that is 0 years old, or a newborn. We denote a person of age $x$ by putting the age inside parentheses. So, in this example, we denote a life of age 0 with (0). Suppose we want to find the probability that (0) survives to (1). It’s as simple as making sure we understand what the information in the life table means, and then taking advantage of the definitions of $l_x$ and $d_x$. 
  
 Row 1, when $x$ = 0, represents the beginning of the first year where we know from the life table that we start with 1000 people. Row 2, when $x$ = 1, tells us that $l_1$ = 900 which means we expect 900 people to be alive at the beginning of year two. This necessarily means that we expect 100 people to die during the first year which is reflected by $d_0$. Therefore, we can represent the probability as follows:
-\[Pr((0)\ survives\ the\ first\ year ) = \frac{900}{1000} = .9\]
+\[Pr((0)\text{ survives to (1)}) = \frac{900}{1000} = .9\]
  
  
-Now, lets calculate the probability that (1) survives to age two. Like the previous example, we will take the expected number of survivors at the beginning of year two and divide it by the expected number of survivors at the end of year two. 
-\[ Pr((1)\ survives\ the\ year ) = \frac{800}{900} \approx .889\]
+Now, lets calculate the probability that (1) survives to (2). Like the previous example, we will take the hypothetical number of survivors at the beginning of year two and divide it by the hypothetical number of survivors at the end of year two. 
+\[Pr((1)\text{ survives to (2)}) = \frac{800}{900} \approx .889\]
  
-The probabilities that we have calculated above are denoted with $p_x$ where $x$ is the age of the person of interest. So, we write the probability that (0) survives the year as $p_0$, and the probability that (1) survives the year as $p_1$.  
+The probabilities that we have calculated above are denoted with 
+\[p_x = P((x)\text{ survives to} (x+1))\]
+ where $x$ is the age of the person of interest. So, we write the probability that (0) survives to (1) as $p_0$, and the probability that (1) survives to (2) as $p_1$.  
  
 We then have natural notation for the probability that a person dies within a certain year, denoted with $q_x$, where 
 \[ q_x=1-p_x \].
  
-In *Table 1.2* we have added columns $p_x$ and $q_x$ to our previous life table.  
+In *Table 1.2* we have added columns for $p_x$ and $q_x$ to our previous life table.  
 &nbsp; 
  
  *Table 1.2.*  
@@ -65,17 +67,20 @@ life.table <- data.frame(x, lx, dx, px, qx)
 print(life.table, row.names = FALSE, digits = 3)
 ```
  
-With *Table 1.2*, we can now calculate more conditional probabilities. In the above examples, notice that we calculated the probabilities of surviving year $x$, but what if we want to know the probability of surviving for periods longer than that? For example, suppose we want to know the probability that a newborn survives the year they were born, $and$ the year after that. We can represent that as follows:
+With *Table 1.2*, we can now calculate more conditional probabilities. In the above examples, notice that we calculated the probabilities of surviving year $x$, but what if we want to know the probability of surviving for periods longer than that? For example, suppose we want to know the probability that a newborn survives to (1), *and* the year after that. We can represent that as follows:
 $$
 \begin{aligned}
-&\quad Pr((0)\ survives\ the\ first\ year\ and\ the\ second\ year) \\
-&= Pr((0)\ survives\ the\ first\ year)Pr((0)\ survives\ the\ second\ year \mid (0)\ survived\ the\ first\ year) \\
-&= Pr((0)\ survives\ the\ first\ year)Pr((1)\ survives\ the\ second\ year) \\
-&= p_0 p_1 = (\frac{900}{1000})(\frac{800}{900}) = .8
+&\quad Pr((0)\text{ survives the first year and the second year}) \\
+&= Pr((0)\text{ survives the first year})Pr((0)\text{ survives the second year} \mid (0)\text{ survived the first year}) \\
+&= Pr((0)\text{ survives the first year})Pr((1)\text{ survives the second year}) \\
+&= p_0 p_1 = \left(\frac{900}{1000}\right)\left(\frac{800}{900}\right) = .8
 \end{aligned}
 $$
+
  
-Thankfully, we have notation for this type of problem. We will represent the probability that $(x)$ survives to year $x+t$ with $_{t}p_{x}$. So, in the previous example, we would write $_{2}p_{0}$ to represent the probability that a newborn reaches age 2. In general, we can calculate the probability that a person age $x$ reaches age $x+t$ with 
+Thankfully, we have notation for this type of problem. We write
+\[_{t}p_{x} = Pr((x) will survive to (x+t))\]
+So, in the previous example, we would write $_{2}p_{0}$ to represent the probability that a newborn reaches age 2. In general, we can calculate the probability that a person age $x$ reaches age $x+t$ with 
 \[_{t}p_{x} = p_{x}p_{x+1}p_{x+2}...p_{t-1} \].  
  
 Another intuitive calculation for $_{t}p_{x}$ is  
@@ -98,7 +103,7 @@ _{t \mid u}q_{x} &= \ _{t}p_{x} \ _{u}q_{x+t}.  \\
 \end{aligned}
 $$
  
-We will use this to calculate ${2\mid 3}q_{4}$, the probability that a person of age 5 lives to age 7 and then dies before age 9.
+We will use this to calculate ${2\mid 3}q_{4}$, the probability that a person of age 4 lives to age 6 and then dies before age 9.
  
 $$
 \begin{aligned}
@@ -116,36 +121,53 @@ The future years completed by (x) prior to death is called the *curtate-future-l
  
 \newpage
  
-#2.1 Life Table Construction
+#1.2 Life Table Construction
  
-Now that you have a basic understanding  of the information contained in life tables, it would be a good time to get an idea of how these life tables are constructed. 
+Now that we have a basic understanding  of the information contained in life tables, it would be a good time to get an idea of how these life tables are constructed. 
  
 There is an immense body of knowledge out there for constructing life tables, and it would take an entire book to dive into all of the details. Here, we will opt to provide a background of the different factors that are relevant to their building.
  
 The most straightforward way to construct a complete life table is by observing a population at the time of birth and following them throughout the years, recording the number of deaths each year until there are no longer any survivors. The group that is being followed is called a __cohort__; so these are called __cohort life tables__. 
 In the United States and many other countries, the numbers of births and deaths are recorded each year. For the U.S., there is data for births and deaths dating all the way back to 1933. If we know exactly how many people are born at 1933, we can treat them as a cohort and record deaths at each age to calculate death rates like in Section 2.1. 
  
-The major drawback of a cohort life table is that you only have data in the table up until the current point in time, and can only make rough predictions for future probabilities. For example, if we began examining a cohort that was born in 1985, we would only have data in 2016 that reflects a life table through age 31. Trying to predict the death rates for people aged 40, 50, and 60, could put you at risk of large error by extrapolation.
+The major drawback of a cohort life table is that we only have data in the table up until the current point in time, and can only make rough predictions for future probabilities. For example, if we began examining a cohort that was born in 1985, we would only have data in 2016 that reflects a life table through age 31. Trying to predict the death rates for people aged 40, 50, and 60, could put us at risk of large error by extrapolation.
  
-This leads us to another common type of life table, called a __static__, or __period__, __life table__. This method involves looking at an entire population over a short period of time; most commonly 1-3 years. This is often done around a census period, where one can utilize information about total number of people alive in a country or region and what age they are. By then looking at the number of deaths and age of death over the short time period, you can estimate the death rates at each age.
+This leads us to another common type of life table, called a __static__, or __period__, __life table__. This method involves looking at an entire population over a short period of time; most commonly 1-3 years. This is often done around a census period, where one can utilize information about total number of people alive in a country or region and what age they are. By then looking at the number of deaths and age of death over the short time period, we can estimate the death rates at each age.
  
 The downside to period life tables is that this snapshot of death rates may not be reflective of the death rates that younger people will experience when they’re older. For example, the probability of death for an 85 year old in the current period life table is not likely to be the probability of death when I actually turn 85 years from now due to advances in medicine or other changes in the environment.
  
-Another common approach to constructing a life table is by statistical modeling. Like you’ve seen in your statistics classes, it may be the case that fitting a model will provide  deeper insight into your data, and a more accurate way to estimate or forecast. There are several popular methods for modeling death rates, and they all try to compete to be the best one by including different parameters or making different assumptions. A detailed comparison of some of the most popular methods can be found via a link in the appendix.
+Another common approach to constructing a life table is by statistical modeling. Like we’ve seen in our statistics classes, it may be the case that fitting a model will provide  deeper insight into our data, and a more accurate way to estimate or forecast. There are several popular methods for modeling death rates, and they all try to compete to be the best one by including different parameters or making different assumptions. A detailed comparison of some of the most popular methods can be found via a link in the appendix.
  
-In practice, it may depend what your goals are with the life table when choosing which method, or combination of methods, to employ. Like any other model, the one you build is not 100% right, but you’re hoping it’s useful.
+As we’ve shown, the collection of data and creation of a life table is a serious project. The Society of Actuaries (SOA) website has a substantial list of mortality tables that can be broken down by factors such as type and country. These come from a variety of sources including the IRS and independent studies.
  
  \newpage
 
+#1.3 Life Tables in R
+
+For Exam MLC, the SOA uses the life tables available in the R package ‘lifecontingencies.’ This package includes mortality tables and built-in functions for common actuarial computations. According to the package creator, “The main purpose of the package is to provide a comprehensive set of tools to perform risk assessment of life contingent insurances.” Our goal in this section and in future modules is to show how to utilize this package to make actuarial computations easier, and to reinforce some of the concepts introduced in the material.
+
+We begin by opening the R console, and typing
+```{r, eval = FALSE}
+install.packages("lifecontingencies")
+```
+Then, after it installs,
+```{r, eval = FALSE}
+library(lifecontingencies)
+```
+
+
+
+
+\newpage
 
 #Problems
 
 ##1.
 
-Referring to table below, evaluate the probability that someone that survives to age 2 will  
-a. live to year 4.  
-b. die before year 5.  
-c. die during 5th year of life.  
+Referring to table below, evaluate the probability that someone that survives to (82) will  
+a. live to year 84.  
+b. die before year 85.  
+c. die during 85th year of life.  
 
 ![Alt text](problem1pic.png)
 
@@ -171,16 +193,16 @@ Problem 1:
 
 1a.   
 
-$$ \frac{s(4)}{s(2)} = \frac{l_4}{l_4} = \frac{98535/100000}{98648/100000} = \frac{98535}{98648} = 0.99885  $$  
+$$ \frac{s(84)}{s(82)} = \frac{l_{84}}{l_{82}} = \frac{20193/100000}{25681/100000} = \frac{20193}{25681} = 0.7863  $$  
 
 
 1b.  
 
-$$ \frac{s(2) - s(5)}{s(2)} = 1 - \frac{l_5}{l_2} = 1 - \frac{98495}{98648} = 0.001551 $$  
+$$ \frac{s(82) - s(85)}{s(82)} = 1 - \frac{l_{85}}{l_{82}} = 1 - \frac{17629}{25861} = 0.3183 $$  
 
 1c.  
 
-$$ \frac{s(4) - s(5)}{s(2)} = \frac{(l_4 - l_5)}{s(2)} = \frac{(98535 - 98495)}{98648} = 0.0004055 $$  
+$$ \frac{s(84) - s(85)}{s(82)} = \frac{(l_{84} - l_{85})}{s(82)} = \frac{(20193 - 17629)}{25681} = 0.09984 $$  
 
 Problem 2:  
 
@@ -213,3 +235,5 @@ for (i in 2:length(row.names(new_soa.08))){
 new_soa.08$ex[1] = sum(new_soa.08$lx * new_soa.08$px)
                  / new_soa.08$lx[1]
 ```
+
+
