@@ -1,0 +1,90 @@
+---
+title: "mod3test"
+author: "Marcus Milazzo"
+date: "9/28/2017"
+header-includes:
+   - \usepackage{actuarialangle}
+output: pdf_document
+---
+#Introduction
+
+In the previous module, we looked at life insurance and introduced the concept of actuarial present value. Life insurance payments were often contingent upon death, and now we turn to a form of payments that are often contingent upon survival: **life annuities**. Life annuities play a major role in life insurance operations, as well as pension systems. A life annuity of premiums is usually used to purchase life insurance rather than a lump sum, and a retirement plan can be thought of as a system for purchasing deferred life annuities.
+
+All of the previous annuity concepts from finance hold true, but now we have the added condition of survival. Payments may occur continuously or at equal intervals, and payments can occur at the beginning or end of periods. In our introduction of the topic here, we will focus on only the continuous case because it makes the math a little nicer. The discrete case is analogous to a lot of the continuous examples, but with slight modification. We encourage the reader to look into the discrete case after gaining a solid grasp of the concepts.
+
+
+##3.1
+
+We’ll begin by looking at **whole life annuities** which provide for payments until death, so that the present value is $\Upsilon = \bar{a}_\angl{t}$ for all $T \ge 0$. Like the previous module, we’ll assume a payment of 1 and a constant force of interest $\delta$ for the rest of this module. To find the actuarial present value, we set up the integral
+
+\[ \bar{a}_x = \text{E}[\Upsilon] =  \int_{0}^{\infty} \bar{a}_\angl{t}  \ _{t}p_{x} \ \mu (x+t) \ dt\]
+
+Then using integration by parts, it can be shown that
+\[ \bar{a}_x = \int_{0}^{\infty} v^t \ _{t}p_{x} \ dt = \int_{0}^{\infty}\ _{t}\text{E}_{x} \ dt . \]
+
+
+The above is known as the **current payment technique** for finding the actuarial present value. This makes sense for the expected value of the annuity because it looks like we’re discounting a payment with $v_t$ and also multiplying by the probability that a payment is made at time $t$.
+
+In general, the current payment technique can be thought of as
+\[ APV = \int_{0}^{\infty} v^{t}\ \text{Pr[payment made at time}\ t\text{]} \times [\text{Payment rate at time}\ t] \ dt \]
+
+\vspace{1cm}
+
+Slightly different from the whole life annuity, is the **n-year temporary life annuity**, which is payable continuously while (*x*) survives during the next *n* years. Now we define the present value of a benefits random variable as
+
+\[ \Upsilon =  \left\{
+\begin{array}{ll}
+      \bar{a}_\angl{T} & 0 \le T \le n \\
+      \bar{a}_\angl{n}  & T \ge n. \\
+\end{array} 
+\right. \]
+
+The clear difference between this and the whole life annuity is that $\Upsilon$ for the *n*-year is limited to $a_\angl{n}$. The actuarial present value is denoted with $\bar{a}_\angl{x:n}$ and equals
+
+\[
+\bar{a}_\angl{x:n} = \text{E}[\Upsilon] = \int_{0}^{\infty} \bar{a}_\angl{T} \ _{t}p_{x}\ \mu (x+t)\  dt + \bar{a}_\angl{n} \ _{n}p_{x}.
+\]
+
+
+Then, using integration by parts gives
+\[
+\bar{a}_\angl{x:n} = \int_{0}^{n} v^{t} \ _{t}p_{x}\ dt 
+\]
+
+Note that this resembles the current payment form, and differs from the whole life annuity only in the limits of integration. 
+
+\vspace{1cm}
+
+Similar to this is the **n-year deferred whole life annuity** which only makes payments after time *n*. The present value random variable is defined
+\[
+\Upsilon = \left\{
+\begin{array}{ll}
+      0  & 0 \le T \le n \\
+      v^n\  \bar{a}_{\angl{T-n}}  & T \ge n. \\
+\end{array} 
+\right.
+\]
+
+Like the other annuities we’ve looked at, the derivation of the APV of an *n*-year deferred whole life annuity is straightforward, and eventually boils down to the more intuitive current payment form:
+\[
+_{n\vert}\bar{a}_{x} = \int_{n}^{\infty}v^t \ _{t}p_{x} \ dt.
+\]
+
+\vspace{1cm}
+
+We’ll now look at a type of whole life annuity that has a guarantee of payments for the first *n* years, called an **n-year certain and life annuity**. The present value of the annuity payments is
+
+\[ \Upsilon =  \left\{
+\begin{array}{ll}
+      \bar{a}_\angl{n} &  T \le n \\
+      \bar{a}_\angl{T}  & T > n. \\
+\end{array} 
+\right. \]
+
+Here, that is
+
+\[
+\bar{a}_{\overline{x:\angl{n}}} = a_\angl{n} +  \int_{n}^{\infty}\ v^t \ _{t}p_{x} \ dt.
+\]
+
+where we adopt the new symbol $\bar{a}_{\overline{x:\angl{n}}}$ to indicate that the payments continue until max[*T(x), n*]. The structure of this APV makes sense because the person is guaranteed the payments from $a_\angl{n}$, but we must account for the probability of the payments after time *n* in the integral.
