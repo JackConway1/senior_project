@@ -5,13 +5,58 @@ date: "9/21/2017"
 output: 
     pdf_document: 
         fig_caption: false
+header-includes:
+  - \usepackage{tikz}
+  - \usepackage{pgfplots}
 ---
 
 \qquad Option traders use various option pricing models to calculate theoretical option values. The two models for pricing options discussed in this section are the **Binomial option pricing model** and the **Black Scholes option pricing model**.  
 
 ## 1 Binomial Option Pricing Model 
 
-\qquad The **Binomial option pricing model** is a simple way to price options by assuming no arbitrage. Meaning no investment opportunities exist that require zero dollars of investment and provide positive yield.   
+\qquad The **Binomial option pricing model** is a simple way to price options by assuming no arbitrage. Meaning no investment opportunities exist that require zero dollars of investment and provide positive yield. We will demonstrate the idea of no arbitrage pricing in the following example.
+
+Consider a stock worth 100 at time 0. At time 1 the stock price is either 200 or 50. We will assume a one-period risk free rate: r = 11%.  Our goal is to find the price of a call option with strike price 150 and expiry date at time 1. Remember that a call is an option to buy an asset at the designated strike price at a future time. At time one if the call is exercised, the payoff is either 50 (200-150) or 0 (call won't be exercised at price 50). We will denote the price of the call option at strike price 150 over one period of time as C(150,1).
+
+|        	| Time 0   	| Time 1 Payoff (50) 	| Time 1 Payoff (200) 	|
+|--------	|----------	|---------------------	|--------------------	|
+| Stock  	| 100      	| 50                 	| 200                 	|
+| Option 	| C(150,1) 	| 0                  	| 50                  	|
+
+
+So suppose at time 0 we buy x shares of stock (at price 100x) and y call options (at price C(150,1)y). Then our value at time 1 is either 200x +50y if the stock price is 200. If the stock price is 50 at time one than the value is equal to 50x. Now suppose we choose y so that our payoff is equal.
+
+
+
+$$
+200x + 50y = 50x \implies y = -3x
+$$
+Then plugging back in y to the equation we have the outcome is 50x regardless of the outcome which would mean no risk. So the discounted payoff at the risk-free rate should be equal to the original cost of the portfolio.
+
+$$
+\frac{50x}{1 + 0.11} = 100x + C(150,1)(-3x)
+$$
+
+This implies $C(150,1) = (100 - 50/1.11)/3 = 18.32$.
+
+If C does not equal 18.32 there is an opportunity for arbitrage. Consider if the C(150,1) was priced at 17. If we sell 1 share and buy 3 options we would pay 51 for the options (3\*17) and be payed 100. If we then invest at the risk-free rate in a bank at $\frac{50}{1.11} \approx 45.05 \text{ our total expenses plus income would be } 100 - 51 - 45.05 = 3.95$. So at time 0 we have an income of 3.95.  
+
+At time 1 the share value that we lost from selling it will be equal to -50 at stock price 50. The option will not be exercised and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.  
+
+If the stock price is 200 than the value lost from selling the share will be equal to -200. The options will be exercised for a payoff of 150 ((200-150)\*3) and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.
+
+|                    	| Time 0 	| Time 1 Payoff (50) 	| Time 1 Payoff (200) 	|
+|--------------------	|--------	|--------------------	|---------------------	|
+| Sell 1 Share Stock 	|    100 	|                -50 	|                -200 	|
+| Buy 3 Options      	|    -51 	|                  0 	|                 150 	|
+| Invest in bank     	| -45.05 	|                 50 	|                  50 	|
+|--------------------	|--------	|--------------------	|---------------------	|
+| Total Payoff       	|   3.95 	|                  0 	|                   0 	|
+
+We can see here that we have a positive payoff at time 0 for no cost since the payoff at time 1 will be 0 whether the stock is worth 50 or 200. Similarly if the call option was more expensive than 18.32 we would take the opposite postion. If we followed the same process as before, but instead we buy 1 share, sell 3 options, and borrow from the bank we would have a positive payoff at 0 and value of 0 at time 1.  
+
+\qquad This is the idea of arbitrage that there is an opportunity for arbitrage if there is a positive return with no risk of loss. 
+
 
 \qquad The main idea of the **Binomial option pricing model** is that a share of stock can either go up (with probability **p**) or down (with probability **1-p**) over a period of time and we want to price a call option on the stock in a way that allows no arbitrage. 
 
@@ -23,15 +68,28 @@ output:
 
 Consider a non-dividend paying stock currently priced at 50 and the price will either be 60 or 40 at the end of the year with a risk-free rate of 5%:
 
+\begin{center}
+\begin{tikzpicture}[sloped]
+   \node (a) at ( 0,0) {50};
+   \node (b) at ( 4,-1.5) {40};
+   \node (c) at ( 4,1.5) {60};
+   \draw [->] (a) to node [above] {$(1-p)$} (b);
+   \draw [->] (a) to node [above] {$p$} (c);
+\end{tikzpicture}
+\end{center}
+
+
 To calculate **p**, assuming a risk-neutral world, we can discount the expected value of the future price at the risk-free rate of $e^{-0.05}$:  
 $$
 \begin{aligned}
 50 &= e^{-0.05}\left(60(p) + 40(1-p)\right)\\
-&= e^{-0.05}\left(20p + 40\right)\\
-50e^{0.05} &= 20p + 40\\
-p &= \frac{50e^{0.05} - 40}{20}\\
-&= \frac{50\left(1.051271\right) - 40}{20}\\
-&= \frac{12.56355}{20}\\
+\end{aligned}
+$$
+
+Solving for **p** we get
+
+$$
+\begin{aligned}
 p &= 0.62818
 \end{aligned}
 $$
@@ -65,30 +123,49 @@ d &= 0.8
 $$
 
 
-\qquad The choice of *u* and *d* is not arbitrary. This is where the idea of no arbitrage is important. The upper node must be higher than the result of a  risk-free inverstment, and the lower node must be lower, or else arbitrage would be possible. Either the stock would always be better than the risk-free investment or it would always be worse. This would lead to arbitrage in that you would short as much stock as possible and lend the money from the short possition at the risk-free rate, or you would borrow as much as you could at the risk-free rate to buy stock. A risk-free investment of $S$ produces $Se^{rh}$, while stock produces $Se^{\delta h}$
+\qquad The choice of *u* and *d* is not arbitrary. This is where the idea of no arbitrage is important. The upper node must be higher than the result of a  risk-free inverstment, and the lower node must be lower, or else arbitrage would be possible. Either the stock would always be better than the risk-free investment or it would always be worse. This would lead to arbitrage in that you would short as much stock as possible (remember that a short position is borrowing the asset from someone, selling it and then buying it back and returning the asset at a future date to the borrower) and lend the money from the short possition at the risk-free rate, or you would borrow as much as you could at the risk-free rate to buy stock. A risk-free investment of $S$ produces $Se^{rh}$, while stock produces $Se^{\delta h}$
 
 $$
 \begin{aligned}
 d < e^{\left(r-\delta\right)h} < u
 \end{aligned}
 $$
-$Se^{\left(r-\delta\right)h}$ is the forward price of the stock, so in order for arbitrage to not be possible the forward price of the stock must be between the upper and lower nodes. If the forward price of the stock can vary over a large range of values it is important for the binomial pricing model to account for this.
+$Se^{\left(r-\delta\right)h}$ is the forward price of the stock (remember that the forward price of the stock is the predetermined price for an asset decided by the buyer and seller to be paid at a predetermined date in the future), so in order for arbitrage to not be possible the forward price of the stock must be between the upper and lower nodes. If the forward price of the stock can vary over a large range of values it is important for the binomial pricing model to account for this.
 
-\qquad A larger spread between $u$ and $d$ would indicate a larger variance in the stocks price. In the binomial option pricing model we are concerned with the variance of a random variable that takes the values of the continuously compounded rate of return, calculated by ln($u$) and ln($d$). This is treated as a random variable that is assumed to be either ln($u$) or ln($d$) with equal probability, similar to a Bernoulli random variable. So the variance is calculated similarly with $v^2 = 0.25(\text{ln}(u) - \text{ln}(d))^2$. Solving for $u$ we have  
+\qquad A larger spread between $u$ and $d$ would indicate a larger variance in the stocks price. In the binomial option pricing model we are concerned with the variance of a random variable that takes the values of the continuously compounded rate of return, calculated by ln($u$) and ln($d$). This is treated as a random variable, X, that is assumed to be either ln($u$) or ln($d$) with equal probability, similar to a Bernoulli random variable. While the probability of going up or down in the binomial tree is not equal to 0.5, calculating the variance assumes that the probability of 0.5. So the variance is calculated similarly
+
+$$
+\text{Var}(X) = \text{E}[X^2] - \left(\text{E}[X]\right)^2
+$$
+We have 
+
+$$
+\text{E}[X^2] = 0.5(\text{ln}(u))^2 + 0.5(\text{ln}(d))^2
+$$
+
+and
+
+$$
+\left(\text{E}[X]\right)^2 = \left(0.5\text{ln}(u) + 0.5\text{ln}(d)\right)^2
+$$
+Solving for $\text{Var}(X)$ we have
+
+$$
+\text{Var}(X) = 0.25(\text{ln}(u) - \text{ln}(d))^2
+$$
+
+with the variance being denoted $v^2$ solving for $u$ we have  
 
 $$
 \begin{aligned}
 v^2 &= 0.25\text{ln}^2(u/d)\\
-4v^2 &= \text{ln}^2(u/d)\\
-2v &= \text{ln}(u/d)\\
-e^{2v} &= \frac{u}{d}\\
 u &= d\,e^{2v}
 \end{aligned}
 $$
 
-where $v$ is the square root of the variance, defined to be the **volatility**, for one period. It is annualized by dividing it by $\sqrt{h}$, where $h$ is the size of the period. Then we have the annual volatility of the asset which is defined to be $\sigma$.  
+where $v$ is the square root of the variance, defined to be the **volatility**, for one period. It is annualized by dividing it by $\sqrt{h}$, where $h$ is the size of the period relative to one year. For example if one period is six months h = 0.5, three months h = 0.25, one month h = 0.08333  etc. We square root the size of the period since $V^2$ is calculated over h we square root both to get $\sqrt{h}$. By adjusting for this size of the period relative to one year we have the annual volatility of the asset which is defined to be $\sigma$.  
 
-\qquad To make sure that the forward price of the stock is captured between the two end points, we use the volatility and its inverse to solve for $u$ and $d$.
+\qquad To make sure that the forward price of the stock is captured between the two end points, we use the volatility and its inverse to solve for $u$ and $d$. By adjusting for the volatility over the period we are able to get an expected change in the stock price by a multiplicative increase or decrase. Our volatility gives us an estimate of the change in price that the stock will undergo in the period of time we are interested in. Essentially we are computing the change of either increase or decrease in stock prices since the volatility is applied in either direction. So larger volatility will result in larger increases or decreases.  
 
 $$
 \begin{aligned}
@@ -99,12 +176,6 @@ $$
 
 \qquad Volatility is defined as the underlying standard deviation of the logarithm of the proportionate change in price. To estimate it we use the standard deviation of the logarithm of consecutive stock prices, $\text{ln}\left(S_t/S_{t-1}\right)$. This can be calculated daily, weekly, or monthly and converted into the annual volatility, $\sigma$.
 
-$$
-\begin{aligned}
-\hat{\sigma} &= \sqrt{p}\sqrt{\frac{n}{n-1}\left(\frac{\sum_{i=1}^{n}x_i^2}{n} - \bar{x}^2\right)}
-\end{aligned}
-$$
-
 Where $n$ is the number of ratios, $x_i = \text{ln}\left(S_i/S_{i-1}\right)$, and $p$ is the number of periods per year. This estimate can be used to solve for $u$ and $h$ in the equations above.  
 
 \qquad Using the values of $u$ and $h$, the present value of the stock based on the starting price, $S\,e^{-\delta h}$ is set equal to the expected present value of the stock price at the end points $u$ and $d$. The general formula for **p** is then found by solving for p.
@@ -112,9 +183,13 @@ Where $n$ is the number of ratios, $x_i = \text{ln}\left(S_i/S_{i-1}\right)$, an
 $$
 \begin{aligned}
 S\,e^{-\delta h} &= e^{-rh}\left(p\,u\,S + (1-p)d\,S\right)\\
-e^{-\delta h} &= e^{-rh}\left(p\,u + (1-p)d\right)\\
-&= e^{-rh}\left(p(u-d)+d\right)\\
-e^{rh-\delta h} &= p(u-d) + d\\
+\end{aligned}
+$$
+
+Solving for p:
+
+$$
+\begin{aligned}
 p &= \frac{e^{rh-\delta h} - d}{u-d}
 \end{aligned}
 $$
@@ -122,7 +197,28 @@ $$
 ### 1.3 Risk-neutral Multi-period Pricing 
 
 \qquad The previous example above (section 1.1) is a one period tree. Consider a put option on the same stock with u = 1.2 and d = 0.8 with a time to expiry of two years. We now have a two period tree. Now for the second period the prices are defined to change by the same factor. From 60, the stock price can go up by a factor of 1.2 (72), or it can go down by a factor of 0.8 (48). 
+
 Similarly for 40, the stock price can either be 48 or 32. In this case, we price from the final expiry date and work backwards to find the initial price of the call option at each period until we get to the current time period. We will continue to use a risk-free rate of 0.05, a strike price of 60, and a stock that pays no dividends.   
+
+
+\begin{center}
+\begin{tikzpicture}[sloped]
+   \node (a) at ( 0,0) {50};
+   \node (b) at ( 4,-1.5) {40};
+   \node (c) at ( 4,1.5) {60};
+   \node (d) at ( 8,-3)  {32};
+   \node (e) at ( 8,0)  {48};
+   \node (f) at ( 8,3)  {72};
+   \draw [->] (a) to node [above] {$(1-p)$} (b);
+   \draw [->] (a) to node [above] {$p$} (c);
+   \draw [->] (c) to node [above] {$p$} (f);
+   \draw [->] (c) to node [above] {$(1-p)$} (e);
+   \draw [->] (b) to node [above] {$p$} (e);
+   \draw [->] (b) to node [above] {$(1-p)^2$} (d);
+\end{tikzpicture}
+\end{center}
+
+
 
 First we want the risk neutral probability **p** that the value of the stock will increase. Using the equation described above we can solve for **p** quickly.
 
@@ -157,7 +253,39 @@ Discounting this expected payoff at the risk-free rate of 0.05 over two years we
 
 \qquad This limiting process of the binomial formula converges to the Black-Scholes model discussed in section 2 below. This assumes a lognormal distribution of prices and relies on the central limit theorem to show that "as the number of periods into which the fixed length of time to expiration is divided approaches infinity, the probability that the standardized continuously compounded rate of return of the stock through the expiration date is not greater than the number z approaches the probability under a standard normal distribution"(Journal of Financial Econmics 7(1979)).  
 
+\qquad To think about this let $S_T$ be the price of a stock at time t. In our model of stock prices, we are going to assume that the rate of return on the stock is normally distributed. Suppose $\alpha$ is the continuously compounded annual rate of return. If there were no randomness then we would have $S_T = S_0 e^{\alpha t}$. Since $S_T$ is random we have $S_T = S_0 e^{A t}$ where A is a normally distributed ranom variable, so the ratio is lognormally distributed.
 
+We can simulate this with option packages in R.
+
+```{r,echo = FALSE, eval=FALSE}
+library('fOptions')
+library('RUnit')
+```
+
+```{r}
+stock.price.tree <- function(stock=100,rfree=.08,lvls=10,vol=.3,time=0.01)
+{
+    per <- time/(lvls-1);                   
+    sq.per <- sqrt(per)                 
+    intdelta <- exp(rfree*per)        
+    up <- exp(vol*sq.per)               
+    dwn <- 1/up                         
+    tree <- matrix(0,nrow = lvls, ncol= lvls)
+    for (rows in 1:lvls)
+    {
+        if(rows ==1)
+        {
+            tree[1,1] <- stock
+            next
+        }
+        trow <- (up)^(0:(rows-1))*(dwn)^((rows-1):0) 
+        trow <- stock*trow*intdelta^(rows-1)     
+        tree[rows,1:rows] <- trow                
+    }
+tree
+}
+tail(stock.price.tree())
+```
 
 
 \newpage
@@ -250,6 +378,13 @@ P(30,35,0.3,0.08,0.5,0.04) &= 35e^{-0.5(.08)}(0.75058) - 30e^{-0.5(0.04)}(0.7006
 \end{aligned}
 $$
 
+\qquad We can observe how changes parameters such as strike price, time to expiry, volatility, and initial price affects the option price.
+
+```{r, out.width = "400px", echo=FALSE,fig.align='center'}
+knitr::include_graphics("optiongreeks.png")
+```
+
+
 \newpage
 
 ### 2.2 Limitations of the Black-Scholes formula
@@ -263,6 +398,8 @@ knitr::include_graphics("volatility.smile.png")
 ```
 
 This goes against what we would expect in the assumptions of the Black-Scholes pricing model and can become increasingly a problem in fair pricing as the spot price is farther in or out the money.
+
+
 
 \newpage  
 
@@ -305,3 +442,5 @@ For a European call option on a stock that meets the Black-Scholes conditions ca
 ## 1.
 
 ## 2.
+
+## 3.
