@@ -121,21 +121,43 @@ $$
 
 ### 1.3 Risk-neutral Multi-period Pricing 
 
-\qquad The previous example above (section 1.1) is a one period tree. Consider a call option with a time to expiry of two years. We now have a two period tree. Now for the second period the prices are defined to change by the same factor. From 60, the stock price can go up by a factor of 1.2 (72), or it can go down by a factor of 0.8 (48). 
-Similarly for 40, the stock price can either be 48 or 32. In this case, we price from the final expiry date and work backwards to find the initial price of the call option at each period until we get to the current time period.   
+\qquad The previous example above (section 1.1) is a one period tree. Consider a put option on the same stock with u = 1.2 and d = 0.8 with a time to expiry of two years. We now have a two period tree. Now for the second period the prices are defined to change by the same factor. From 60, the stock price can go up by a factor of 1.2 (72), or it can go down by a factor of 0.8 (48). 
+Similarly for 40, the stock price can either be 48 or 32. In this case, we price from the final expiry date and work backwards to find the initial price of the call option at each period until we get to the current time period. We will continue to use a risk-free rate of 0.05, a strike price of 60, and a stock that pays no dividends.   
+
+First we want the risk neutral probability **p** that the value of the stock will increase. Using the equation described above we can solve for **p** quickly.
+
+$$
+\begin{aligned}
+p &= \frac{e^{rh-\delta h} - d}{u-d}\\
+&= \frac{e^{0.05(2)}-0.8}{1.2-0.8}\\
+&=0.7629
+\end{aligned}
+$$
+Now that we have **p** we want the payoff of the option if exercised at each possibility in two years. Consider the possibilities of final stock prices that we established above of either 72, 48, 48, or 32. The payoffs of exercising the put option at the strike price of 60 would be 0, 12, 12, and 18 respectively.  
+
+We can think of this path that the stock price takes as a random variable X, that has a Binomial(p = 0.7629, n = 2) distribution and calculate the probability of each outcome.   
+
+For example Pr(X = 2) represents the probability that the stock increased in value at both nodes.   
+$$\text{Pr}(X=2) = {2 \choose{2}} (0.7629)^2 = 0.582$$
+Similarly for Pr(X = 1) and Pr(X = 0)  
+$$
+\begin{aligned}
+\text{Pr}(X = 1) &= {2\choose1} (0.7629)(1-0.7629) = 0.3618\\
+\text{Pr}(X = 0) &= {2\choose0}(1-0.7629)^2 = 0.0562
+\end{aligned}
+$$
+We then use these probabilities to calculate the expected value of the payoff. At $(X = 2)$ the payoff on the put option would be zero, $(X = 1)$ would pay 12, and $(X = 0)$ would pay 18. So the expected value of the put option would be
+
+$$ (0.582)(0) + (0.3618)(12) + (0.0562)(18) = 5.3532 $$
+Discounting this expected payoff at the risk-free rate of 0.05 over two years we have a put premium of $e^{-0.05}(5.3532) = 5.0921$.
+
+### 1.4 Limitations to the Binomial pricing model
+
+\qquad There are clear limitiations to this model. We know that at each point in time that the value of a stock does not have two possible values. There is a continuous distribution of values that this stock price can take and in our current model the only way to account for that is to reduce the time between valuations to smaller and smaller intervals of time. For example, instead of checking the price of the stock at 6 months to instead check the price at each month, day, hour etc. This will change the values of u and d in our equations. In reality the stock price changes continuously and as we adjust these values of u, p, h etc. we essentially are taking the limit as h becomes very close to 0.  
+
+\qquad This limiting process of the binomial formula converges to the Black-Scholes model discussed in section 2 below. This assumes a lognormal distribution of prices and relies on the central limit theorem to show that "as the number of periods into which the fixed length of time to expiration is divided approaches infinity, the probability that the standardized continuously compounded rate of return of the stock through the expiration date is not greater than the number z approaches the probability under a standard normal distribution"(Journal of Financial Econmics 7(1979)).  
 
 
-**still need to add this section **  
-
-
-
-**add explanation of relationship between the binomial model and black-scholes model **  
-
-**limitations to the binomial pricing model? **  
-
-**thinking about adding pictures of the binomial trees **  
-
-**should I include recognizing the shifts in prices as a Geometric Brownian Motion? **  
 
 
 \newpage
@@ -214,17 +236,72 @@ d_1 &= \frac{\text{ln}(30/35) + \left(0.08-0.04+\frac{1}{2}(0.3^2)\right)(0.5)}{
 N(d_1) &= N(-0.52633) = 0.29933\\
 d_2 &= -0.52633 - 0.3\sqrt{0.5} = -0.67633\\
 N(d_2) &= N(-0.67633) = 0.24942\\
-C(30,35,0.3,0.08,0.5,0.04) &= 30e^{-0.5(0.08)}(0.29933) - 35e^{}
+C(30,35,0.3,0.08,0.5,0.04) &= 30e^{-0.5(0.04)}(0.29933) - 35e^{-0.5(.08)}(0.2492)\\
+&= 0.422
+\end{aligned}
+$$
+Similarly for the premium of the put is
+$$
+\begin{aligned}
+N(-d_2) &= 1 - N(d_2) = 0.75058\\
+N(-d_1) &= 1 - N(d_1) = 0.70067\\
+P(30,35,0.3,0.08,0.5,0.04) &= 35e^{-0.5(.08)}(0.75058) - 30e^{-0.5(0.04)}(0.70067)\\
+&= 4.636
 \end{aligned}
 $$
 
-**still need to calculate the price of a put **  
-**planning on adding the volatility smile section after this example **  
+\newpage
 
-**limitations to the black-scholes pricing model? **  
+### 2.2 Limitations of the Black-Scholes formula
+
+\qquad The list of assumptions needed for the Black-Scholes pricing formula to be valid are a major limitation to the model. One key assumption that is typically violated is the assumption that the volatility of the stock price is constant. The Black-Scholes model assumption would say that at a given maturity and all other factors held constant that a change in the strike price would not affect the volatility and that the volatility would remain constant. It is expected that the implied volatility would hold constant across the varying values of strike price.  
+
+\qquad This is can be shown to be violated when we look at changes in the option's strike price affecting whether the option is in or out of the money. In general, the more an option is in or out of the money the greater the implied volatility becomes. When plotting this relationship of strike price to implied volatility there is a phenomena known as the Volatility smile that we see occurring.
+
+```{r, out.width = "250px", echo=FALSE,fig.align='center'}
+knitr::include_graphics("volatility.smile.png")
+```
+
+This goes against what we would expect in the assumptions of the Black-Scholes pricing model and can become increasingly a problem in fair pricing as the spot price is farther in or out the money.
 
 \newpage  
 
-## 3 Exercises and Solutions  
+# Problems
 
-**still working on this **
+## 1.
+A put option is priced using a one-period binomial tree based on forward prices for the underlying stock. Determine the volatility of the stock price given:  
+- The period of the tree is four months.  
+- The option expires in four months.  
+- The current stock price is 25.  
+- The stock pays no dividends.  
+- The continuously compounded risk-free rate is 0.1.  
+- The strike price of the option is 30.  
+- The resulting price of the option is 3.00.  
+
+## 2.
+For a 1 year European call option on a stock calculate the option premium using a 3 period binomial tree given:  
+- The stock price is 200.  
+- The strike price is 250.  
+- u = 1.4 and d = 0.6.  
+- The risk-free continuously compounded interest rate is 0.05.  
+- There are no dividends.  
+
+
+
+## 3.
+For a European call option on a stock that meets the Black-Scholes conditions calculate the premium for the stock option given:  
+- The stock's price is 40.
+- The stock's volatility is 0.2.  
+- The stock pays no dividends.   
+- The risk-free continuously compounded interest rate is 0.07.  
+- The option expires in 6 months.  
+- The strike price is 30.  
+
+
+\newpage
+
+# Solutions
+
+## 1.
+
+## 2.
