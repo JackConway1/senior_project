@@ -117,7 +117,7 @@ $$
  
 If $u = 1$ we just write $_{t \mid}q_{x}$.
  
-The future years completed by (x) prior to death is called the *curtate-future-lifetime* of (x). The expected value of this quantity, also known as the *curtate-expectation-of-life”, in life tables is commonly denoted as $\text{e}_x$, the remaining life expectancy at age x.
+The future years completed by (x) prior to death is called the *curtate-future-lifetime* of (x). The expected value of this quantity, also known as the "curtate-expectation-of-life”, in life tables is commonly denoted as $\text{e}_x$, the remaining life expectancy at age x. This expectation is calculated by summing each year in life remaining times the probability of living to that year and dying in it given the age they are now. This is then rounded up to be the expected years of life left.
  
 \newpage
  
@@ -134,7 +134,7 @@ The major drawback of a cohort life table is that we only have data in the table
  
 This leads us to another common type of life table, called a __static__, or __period__, __life table__. This method involves looking at an entire population over a short period of time; most commonly 1-3 years. This is often done around a census period, where one can utilize information about total number of people alive in a country or region and what age they are. By then looking at the number of deaths and age of death over the short time period, we can estimate the death rates at each age.
  
-The downside to period life tables is that this snapshot of death rates may not be reflective of the death rates that younger people will experience when they’re older. For example, the probability of death for an 85 year old in the current period life table is not likely to be the probability of death when I actually turn 85 years from now due to advances in medicine or other changes in the environment.
+The downside to period life tables is that this snapshot of death rates may not be reflective of the death rates that younger people will experience when they’re older. For example, the probability of death for an 85 year old in the current period life table is not likely to be the probability of death when an 18 year old actually turns 85 due to advances in medicine or other changes in the environment.
  
 Another common approach to constructing a life table is by statistical modeling. Like we’ve seen in our statistics classes, it may be the case that fitting a model will provide  deeper insight into our data, and a more accurate way to estimate or forecast. There are several popular methods for modeling death rates, and they all try to compete to be the best one by including different parameters or making different assumptions. A detailed comparison of some of the most popular methods can be found via a link in the appendix.
  
