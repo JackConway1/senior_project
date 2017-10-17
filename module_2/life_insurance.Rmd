@@ -6,7 +6,7 @@ header-includes:
    - \usepackage{actuarialangle}
 output: pdf_document
 ---
-```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
+```{r include=FALSE, cache=FALSE}
 library(lifecontingencies)
 ```
 
