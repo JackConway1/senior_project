@@ -151,11 +151,22 @@ We begin by opening the R console, and typing
 install.packages("lifecontingencies")
 ```
 Then, after it installs,
-```{r, eval = FALSE}
+```{r, warning = FALSE, message=FALSE}
 library(lifecontingencies)
 ```
 
-
+Then, load in one of the built-in life tables. The most common for MLC is soa08.
+```{r}
+data(soa08)
+head(soa08)
+```
+Now, let’s answer a few questions that may come up in the context of a life table problem. For example, how many people died from the beginning of year one to year three? What is the probability of death from birth to year three? What is the probability (*x*) survives year three? With the *dxt*, *qxt*, and *pxt* functions, this is easy.
+```{r}
+dxt(soa08, x = 0, t = 3)
+qxt(soa08, x = 0, t = 3)
+pxt(soa08, x =  3, t = 1)
+```
+These can of course be computed by hand using the counts in the life table, but this is much easier and quicker.
 
 
 \newpage
@@ -235,5 +246,7 @@ for (i in 2:length(row.names(new_soa.08))){
 new_soa.08$ex[1] = sum(new_soa.08$lx * new_soa.08$px)
                  / new_soa.08$lx[1]
 ```
+
+
 
 

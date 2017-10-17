@@ -6,7 +6,9 @@ header-includes:
    - \usepackage{actuarialangle}
 output: pdf_document
 ---
-
+```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
+library(lifecontingencies)
+```
 
 #Introduction
 
@@ -48,11 +50,20 @@ A^{1}_{x:\angl{n}} = \text{E}[Z] = \sum_{k=0}^{n-1} v^{k+1} \ _{k}p_{x} \ q_{x+k
 
 Now that we have a basic idea of the computations involved for insurance on a single life, we can look at a larger example and its implications. Imagine we are working for a life insurance company, where 10,000 people of age 50 buy a one year term insurance policy with a benefit of $55,000. Each of the insured pays an annual premium of $500 at the beginning of the term so the insurance company collects (10,000)($500) = $5,000,000. The life tables for this group tell us that we can expect 75 people to die in the next year, so we expect to pay out total benefits of ($55,0000)(75) = $4,125,000 one year from now. Discounting at a rate of .08 gives an actuarial present value of approximately $3.8 million. 
 
-In this example, it’s clear the actuaries have a lot to take into account when deciding how to price the insurance. The type of policyholders, length of term, benefit amount, survivorship, and discount rates are all important factors to track and predict when trying to make an accurate model. These problems quickly become more difficult as we add more detail and variation in the important factors, but the concepts remain the same. In the following section, we will introduce a few of the main types of insurance and the mathematical detail behind them.
+Let’s extend this general idea over the course of four years. Imagine we started out with a group of 10,000 people, and charged them each $500 at the beginning of each year for life insurance. Like the previous example, the insurance pays out $55,000 at the end of the year of death, and we use a discount rate of .08. We may get a situation that looks like the table below.
+
+\vspace{.5cm}
+
+![Alt text](payout_table)
+
+\vspace{.5cm}
+
+One can imagine a table like this that continues until we are left with no more lives. In this example, it’s clear the actuaries have a lot to take into account when deciding how to price the insurance. The type of policyholders, length of term, benefit amount, survivorship, and discount rates are all important factors to track and predict when trying to make an accurate model. These problems quickly become more difficult as we add more detail and variation in the important factors, but the concepts remain the same. In the following section, we will introduce a few of the main types of insurance and the mathematical detail behind them.
 
 
 
 #2.3 Types of Life insurance
+
 
 Recall the model we wrote at the end of Section 2.1 that pays a benefit if the insured (*x*) dies within *n* years,
 \[
@@ -99,16 +110,49 @@ The last concept we will introduce before the exercises is the concept of insura
 z_{t} = b_{t} v_{t}
 \]
 
-*Insert n-year term continuous stuff here*
+Similar to the discrete case, we redefine $z_t$, $b_t$, and $v_t$ depending on what type of insurance we have. When looking at the continuous version of *n*-year term life insurance, let
+\[ b_t =  \left\{
+\begin{array}{ll}
+      1 & t\le n \\
+      0 & t > n, \\
+\end{array} 
+\right. \]
+\[v_t = v^{t} \hspace{.5cm} t\ge 0 ,\]
+\[ Z =  \left\{
+\begin{array}{ll}
+      v^{T} & T\le n \\
+      0 & T > n. \\
+\end{array} 
+\right. \]
+and then we can write the APV as
+
+\[ \bar{A}_{x:n}^1 = E[Z] = E[z_t] = \int_{0}^{\infty}\ z_t\ f_T (t)\ dt = \int_{0}^{n} v^t\ _{t}p_x\ \mu_x (t)\ dt\ = \int_{0}^{n} e^{-\delta t}\ _{t}p_x\ \mu_x (t)\ dt \]
 
 
 \vspace{1cm}
 
-As you can imagine, there are even more types of insurance that can be created by varying our functions slightly. For example, *m*-thly increasing whole life insurance*, continuously increasing whole life insurance, *m*-thly increasing n-year term life insurance, and annually decreasing *n*-year term life insurance. 
-
-We hope by now that it’s clear that the actuarial present value and variance of these can be found with slight manipulations to our formulas, and a little bit of work. Over time, one can memorize the details of each type of insurance and endowment, but there is value in understanding where the formulas come from and to be able to recreate them if needed. For reference, summary tables have been provided in the appendix that include the insurances covered in this section and more.
+As one can imagine, there are many types of insurance that can be created with slight variations to the functions $z_t$, $b_t$, and $v_t$. For example, insurances that pay with increasing payments, decreasing payments, or payments at different intervals. Over time, one can memorize the details of each type of insurance and endowment, but there is value in understanding where the formulas come from and the ability to recreate them if needed. For reference, summary tables have been provided in the appendix that include the insurances covered in this section and more.
 
 \newpage 
+
+#2.4 Life Insurance in R
+
+Present value function
+
+Present value with probabilities - APV
+
+Expected curtate lifetime
+
+The lifecontingencies package introduced in the first module has some functions that are useful in the calculations that we saw in these lessons. For example, the package has a present value function that calculates the present value as learned in finance class, but it also has the option to input probabilities as an argument. 
+
+For example, observe the use of the function to compute the actuarial present value of the first example from this module with a discount rate of .08 and .25 probability of payment each year.
+
+```{r}
+presentValue(cashFlows = c(1, 1, 1, 1), timeIds = c(1, 2, 3, 4), interest = .08, 
+             probabilities = c(.25, .25, .25, .25))
+```
+
+This agrees from the calculation that we did by hand earlier.
 
 #Problems
 
@@ -162,5 +206,7 @@ $$
 b. 
 
 c. 
+
+
 
 
