@@ -265,7 +265,7 @@ Discounting this expected payoff at the risk-free rate of 0.05 over two years we
 We can simulate this small change to show a nearly continuous spectrum of possible asset prices.
 
 ```{r}
-upordown <- c(1.2, 0.8)
+upordown <- c(1.01, 0.99)
 sample.path <- NULL
 value <- NULL
 
@@ -282,7 +282,7 @@ value[i] <-
 
 hist(value,
      breaks = 1000,
-     xlim=c(0,1000),
+     xlim=c(0,250),
      main = "Value of Asset",
      xlab = "Asset Price($)")
 ```
@@ -440,7 +440,7 @@ optionprice.changing.t <-
 plot(x=Timetoexpiry,
      y=optionprice.changing.t@price,
      ylab="Option Price($)",
-     xlab="Time(Years)",
+     xlab="Time to Expiry (Years)",
      main="Time vs. Option Price \n S = 60 and K = 50",
      col=4)
 
