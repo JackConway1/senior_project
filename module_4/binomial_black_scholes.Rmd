@@ -10,6 +10,11 @@ header-includes:
   - \usepackage{pgfplots}
 ---
 
+```{r include=FALSE, cache=FALSE}
+library(fOptions)
+library('RUnit')
+```
+
 \qquad Option traders use various option pricing models to calculate theoretical option values. The two models for pricing options discussed in this section are the **Binomial option pricing model** and the **Black Scholes option pricing model**.  
 
 ## 1 Binomial Option Pricing Model 
@@ -97,13 +102,13 @@ We now have the risk-neutral probability that the stock will go up **p = 0.62818
 
 $$
 \begin{aligned}
-C(55,1) &= e^{-0.05}\left((p(5) + (1-p)(0)\right)\\
+C(55,1) &= e^{-0.05}\left(p(5) + (1-p)(0)\right)\\
 &= e^{-0.05}\left((0.62818(5) + (1-0.62818)(0)\right)\\
 C(55,1) &= 2.9877
 \end{aligned}
 $$
 
-So the fair price of a 1-year call option at the strike price of 55 will be \$2.99.
+So the fair price of a 1-year call option at the strike price of 55 will be \$2.99. Consider a more simple example where we observe 10000 changes in the price of a stock. If we had observed 6500 cases where the price had went up and 3500 where the price of the stock went down, then we would estimate the probability of a stock increasing in price to be $\frac{6500}{10000}= 0.65$. This is the general idea that we want to capture with our estimation of increase.  
 
 ### 1.2 Volatility
 
@@ -163,9 +168,9 @@ u &= d\,e^{2v}
 \end{aligned}
 $$
 
-where $v$ is the square root of the variance, defined to be the **volatility**, for one period. It is annualized by dividing it by $\sqrt{h}$, where $h$ is the size of the period relative to one year. For example if one period is six months h = 0.5, three months h = 0.25, one month h = 0.08333  etc. We square root the size of the period since $V^2$ is calculated over h we square root both to get $\sqrt{h}$. By adjusting for this size of the period relative to one year we have the annual volatility of the asset which is defined to be $\sigma$.  
+where $v$ is the square root of the variance, defined to be the **volatility**, for one period. It is annualized by dividing it by $\sqrt{h}$, where $h$ is the size of the period relative to one year. For example if one period is six months h = 0.5, three months h = 0.25, one month h = 0.08333  etc. We square root the size of the period since $v^2$ is calculated over h we square root both to get $\sqrt{h}$. By adjusting for this size of the period relative to one year we have the annual volatility of the asset which is defined to be $\sigma$.  
 
-\qquad To make sure that the forward price of the stock is captured between the two end points, we use the volatility and its inverse to solve for $u$ and $d$. By adjusting for the volatility over the period we are able to get an expected change in the stock price by a multiplicative increase or decrase. Our volatility gives us an estimate of the change in price that the stock will undergo in the period of time we are interested in. Essentially we are computing the change of either increase or decrease in stock prices since the volatility is applied in either direction. So larger volatility will result in larger increases or decreases.  
+\qquad To make sure that the forward price of the stock is captured between the two end points, we use the volatility and its inverse to solve for $u$ and $d$. By adjusting for the volatility over the period we are able to get an expected change in the stock price by a multiplicative increase or decrase. Our volatility gives us an estimate of the change in price that the stock will undergo in the period of time we are interested in. Essentially we are computing the change of either increase or decrease in stock prices since the volatility is applied in either direction. So larger volatility will result in larger increases or decreases in stock price.  
 
 $$
 \begin{aligned}
@@ -251,40 +256,35 @@ Discounting this expected payoff at the risk-free rate of 0.05 over two years we
 
 \qquad There are clear limitiations to this model. We know that at each point in time that the value of a stock does not have two possible values. There is a continuous distribution of values that this stock price can take and in our current model the only way to account for that is to reduce the time between valuations to smaller and smaller intervals of time. For example, instead of checking the price of the stock at 6 months to instead check the price at each month, day, hour etc. This will change the values of u and d in our equations. In reality the stock price changes continuously and as we adjust these values of u, p, h etc. we essentially are taking the limit as h becomes very close to 0.  
 
-\qquad This limiting process of the binomial formula converges to the Black-Scholes model discussed in section 2 below. This assumes a lognormal distribution of prices and relies on the central limit theorem to show that "as the number of periods into which the fixed length of time to expiration is divided approaches infinity, the probability that the standardized continuously compounded rate of return of the stock through the expiration date is not greater than the number z approaches the probability under a standard normal distribution"(Journal of Financial Econmics 7(1979)).  
+\qquad This limiting process of the binomial formula converges to the Black-Scholes model discussed in section 2 below. This assumes a lognormal distribution of prices and relies on the central limit theorem to show that "as the number of periods into which the fixed length of time to expiration is divided approaches infinity, the probability that the standardized continuously compounded rate of return of the stock through the expiration date is less than or equal to the number z approaches the probability under a standard normal distribution"(Journal of Financial Econmics 7(1979)). 
+
+\qquad This happens because if we take the expected value of the ratio of stock prices, as the time period length becomes close to zero our expected value by the central limit theorem is $\mu t$. Similarly, if we calculate the variance of this ratio after working out the algebra we get $\sigma ^2 t$.
 
 \qquad To think about this let $S_T$ be the price of a stock at time t. In our model of stock prices, we are going to assume that the rate of return on the stock is normally distributed. Suppose $\alpha$ is the continuously compounded annual rate of return. If there were no randomness then we would have $S_T = S_0 e^{\alpha t}$. Since $S_T$ is random we have $S_T = S_0 e^{A t}$ where A is a normally distributed ranom variable, so the ratio is lognormally distributed.
 
-We can simulate this with option packages in R.
-
-```{r,echo = FALSE, eval=FALSE}
-library('fOptions')
-library('RUnit')
-```
+We can simulate this small change to show a nearly continuous spectrum of possible asset prices.
 
 ```{r}
-stock.price.tree <- function(stock=100,rfree=.08,lvls=10,vol=.3,time=0.01)
-{
-    per <- time/(lvls-1);                   
-    sq.per <- sqrt(per)                 
-    intdelta <- exp(rfree*per)        
-    up <- exp(vol*sq.per)               
-    dwn <- 1/up                         
-    tree <- matrix(0,nrow = lvls, ncol= lvls)
-    for (rows in 1:lvls)
-    {
-        if(rows ==1)
-        {
-            tree[1,1] <- stock
-            next
-        }
-        trow <- (up)^(0:(rows-1))*(dwn)^((rows-1):0) 
-        trow <- stock*trow*intdelta^(rows-1)     
-        tree[rows,1:rows] <- trow                
-    }
-tree
+upordown <- c(1.2, 0.8)
+sample.path <- NULL
+value <- NULL
+
+for (i in 1:1000){
+sample.path <-
+    sample(x = upordown,
+           prob = c(.5,.5),
+           replace = TRUE,
+           size = 100)
+
+value[i] <- 
+    50*prod(sample.path)
 }
-tail(stock.price.tree())
+
+hist(value,
+     breaks = 1000,
+     xlim=c(0,1000),
+     main = "Value of Asset",
+     xlab = "Asset Price($)")
 ```
 
 
@@ -380,8 +380,70 @@ $$
 
 \qquad We can observe how changes parameters such as strike price, time to expiry, volatility, and initial price affects the option price.
 
-```{r, out.width = "400px", echo=FALSE,fig.align='center'}
-knitr::include_graphics("optiongreeks.png")
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+K <-
+    seq(from=40,
+        to=80,
+        by=0.01)
+
+optionprice.changing.k <- 
+    GBSOption(TypeFlag = "c", S = 50, X = K, Time = 1/4, r = 0.08, b = 0.08, sigma = 0.3)
+
+plot(x=K,
+     y=optionprice.changing.k@price,
+     ylab="Option Price",
+     xlab="K",
+     main="Strike Price vs. Option Price \n Asset Price of 50",
+     col=1)
+
+
+S <-
+    seq(from=40,
+        to=80,
+        by=0.01)
+
+optionprice.changing.s <- 
+    GBSOption(TypeFlag = "c", S = S, X = 50, Time = 1/4, r = 0.08, b = 0.08, sigma = 0.3)
+
+plot(x=S,
+     y=optionprice.changing.s@price,
+     ylab="Option Price($)",
+     xlab="S",
+     main="Asset Price vs. Option Price \n Strike Price of 50",
+     col=2)
+
+
+V <-
+    seq(from=0.01,
+        to=0.5,
+        by=0.001)
+
+optionprice.changing.v <- 
+    GBSOption(TypeFlag = "c", S = 60, X = 50, Time = 1/4, r = 0.08, b = 0.08, sigma = V)
+
+plot(x=V,
+     y=optionprice.changing.v@price,
+     ylab="Option Price($)",
+     xlab="Volatility",
+     main="Volatility vs. Option Price \n S = 60 and K = 50",
+     col=3)
+
+Timetoexpiry <-
+    seq(from=0.01,
+        to=0.5,
+        by=0.001)
+
+optionprice.changing.t <- 
+    GBSOption(TypeFlag = "c", S = 60, X = 50, Time = Timetoexpiry, r = 0.08, b = 0.08, sigma = 0.3)
+
+plot(x=Timetoexpiry,
+     y=optionprice.changing.t@price,
+     ylab="Option Price($)",
+     xlab="Time(Years)",
+     main="Time vs. Option Price \n S = 60 and K = 50",
+     col=4)
+
 ```
 
 
@@ -405,18 +467,9 @@ This goes against what we would expect in the assumptions of the Black-Scholes p
 
 # Problems
 
-## 1.
-A put option is priced using a one-period binomial tree based on forward prices for the underlying stock. Determine the volatility of the stock price given:  
-- The period of the tree is four months.  
-- The option expires in four months.  
-- The current stock price is 25.  
-- The stock pays no dividends.  
-- The continuously compounded risk-free rate is 0.1.  
-- The strike price of the option is 30.  
-- The resulting price of the option is 3.00.  
 
-## 2.
-For a 1 year European call option on a stock calculate the option premium using a 3 period binomial tree given:  
+## 1.
+For a 1 year European call option on a stock calculate the option premium using a 2 period binomial tree given:  
 - The stock price is 200.  
 - The strike price is 250.  
 - u = 1.4 and d = 0.6.  
@@ -425,7 +478,7 @@ For a 1 year European call option on a stock calculate the option premium using 
 
 
 
-## 3.
+## 2.
 For a European call option on a stock that meets the Black-Scholes conditions calculate the premium for the stock option given:  
 - The stock's price is 40.
 - The stock's volatility is 0.2.  
@@ -440,7 +493,27 @@ For a European call option on a stock that meets the Black-Scholes conditions ca
 # Solutions
 
 ## 1.
+$$
+\begin{aligned}
+p &= \frac{e^{0.05(0.5)}-0.6}{1.4-0.6}\\
+&= 0.5316439\\
+uu &=  {2 \choose 2}(0.5316439)^2 = 0.28264524\\
+ud &=  {2 \choose 1}(0.5316439)(1-0.5316439) = 0.49799733 \\
+dd &=  {2 \choose 0}(1-0.5316439)^2 = 0.21935744
+\end{aligned}
+$$
+Expected value of the call is $(0.2826)(142)+(0.498)(30) + (0.2194)(0) = 55.35$. Discounting this at the .05 rate we get a call value of $55.35e^{-0.05} = 52.65$.
+
 
 ## 2.
-
-## 3.
+$$
+\begin{aligned}
+d_1 &= \frac{\text{ln}(40/30)+(0.07+.5(0.2)^2)0.5}{0.2\sqrt{0.5}}\\
+&= 2.3524 \\
+d_2 &= d_1 - 0.2\sqrt{0.5} \\
+&= 2.21099614\\
+C(40, 30, 0.2, 0.07, 0.5, 0) &= 40e^{-0.5(0)}N(d_1)-30e^{-0.07(0.5)}N(d_2) \\
+&= 40e^{-0.5(0)}(0.9906736) - 30e^{-0.07(0.5)}(0.9864819)\\
+&= 11.05
+\end{aligned}
+$$
