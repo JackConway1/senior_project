@@ -13,6 +13,7 @@ header-includes:
 ```{r include=FALSE, cache=FALSE}
 library(fOptions)
 library('RUnit')
+library(quantmod)
 ```
 
 \qquad Option traders use various option pricing models to calculate theoretical option values. The two models for pricing options discussed in this section are the **Binomial option pricing model** and the **Black Scholes option pricing model**.  
@@ -182,6 +183,15 @@ $$
 \qquad Volatility is defined as the underlying standard deviation of the logarithm of the proportionate change in price. To estimate it we use the standard deviation of the logarithm of consecutive stock prices, $\text{ln}\left(S_t/S_{t-1}\right)$. This can be calculated daily, weekly, or monthly and converted into the annual volatility, $\sigma$.
 
 Where $n$ is the number of ratios, $x_i = \text{ln}\left(S_i/S_{i-1}\right)$, and $p$ is the number of periods per year. This estimate can be used to solve for $u$ and $h$ in the equations above.  
+
+We can use the quantmod package in R to get up to date estimates on recent stocks. For example if we were interested in calculating the volatility of APPL stock we could use this package to estimate it.
+
+```{r}
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+getSymbols("AAPL")
+mean(complete.cases(volatility(OHLC = AAPL,n = 25,calc='close',N = 252)))
+```
 
 \qquad Using the values of $u$ and $h$, the present value of the stock based on the starting price, $S\,e^{-\delta h}$ is set equal to the expected present value of the stock price at the end points $u$ and $d$. The general formula for **p** is then found by solving for p.
 
