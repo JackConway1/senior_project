@@ -1,90 +1,78 @@
 ---
-title: "mod3test"
+title: "life_annuities"
 author: "Marcus Milazzo"
 date: "9/28/2017"
 header-includes:
    - \usepackage{actuarialangle}
 output: pdf_document
 ---
+```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
+library(lifecontingencies)
+```
+
+
 #Introduction
 
-In the previous module, we looked at life insurance and introduced the concept of actuarial present value. Life insurance payments were often contingent upon death, and now we turn to a form of payments that are often contingent upon survival: **life annuities**. Life annuities play a major role in life insurance operations, as well as pension systems. A life annuity of premiums is usually used to purchase life insurance rather than a lump sum, and a retirement plan can be thought of as a system for purchasing deferred life annuities.
+In the previous module, we looked at life insurance and introduced the concept of actuarial present value. Life insurance payments were often contingent upon death, and now we turn to a form of payments that are often contingent upon survival: **life annuities**. Recall that an annuity is a series of payments that occur at equal intervals over time. Life annuities play a major role in life insurance operations, as well as pension systems. A life annuity of premiums is usually used to purchase life insurance rather than a lump sum, and a retirement plan can be thought of as a system for purchasing deferred life annuities.
 
-All of the previous annuity concepts from finance hold true, but now we have the added condition of survival. Payments may occur continuously or at equal intervals, and payments can occur at the beginning or end of periods. In our introduction of the topic here, we will focus on only the continuous case because it makes the math a little nicer. The discrete case is analogous to a lot of the continuous examples, but with slight modification. We encourage the reader to look into the discrete case after gaining a solid grasp of the concepts.
+All of the previous annuity concepts from finance hold true, but now we have the added condition of survival. Payments may occur continuously or at equal intervals, and payments can occur at the beginning or end of periods. In our introduction of the topic here, we will focus primarily on discrete life annuities with payments made at the beginning of the year (annuities-due), because they have a more prominent role in actuarial applications.
+
+##3.1 
+
+We’ll begin with a simple example where a person pays for life insurance with a life annuity of premiums. The person pays 1 at the beginning of each year for the next 5 years. If this was an annuity from BUS 342, we would write the sum and discount each payment to time zero. However, with a life annuity the person can only make these payments as long as they are living, so each payment is contingent upon their probability of survival. 
+
+Suppose for the next 5 years the probability of payment has been determined from a life table to be .95 for each year. With an interest rate of .08, the actuarial present value is written
+\[ \text{APV} = (1)(.95) + (1)(.95)v^1 + (1)(.95)v^2 + (1)(.95)v^3 + (1)(.95)v^4 = 4.02615 \]
+
+The above method for calculating APV is known as the **current-payment technique**. This intuitive method is simply discounting the payment being made, and multiplying by the probability that the payment is made in the first place. We write this generally as
+\[ a_{x} = v^{k} \ _{k}p_{x} . \]
+
+\vspace{.25cm}
+
+With a complete life table, we can do a more extended example. Suppose a person that is 40 wants to purchase life insurance with level payments of $1,000 at the beginning of each year for the next 20 years. An actuary with a life table corresponding to (40) wants to calculate the APV of this annuity. Using the current-payment technique, we can write this out by hand as
+
+\[ \text{APV} = (1000) + (1000)(_{1}p_{40})v^1 + (1000)(_{2}p_{40})v^2 + (1000)(_{3}p_{40})v^3 + \textellipsis +(1000)(_{19}p_{40})v^{19} = 10289.06  \]
+
+We can confirm our answer by using the *presentValue* function from the *lifecontingencies* package.
+
+```{r}
+data("soa08")
+prob <- rep(NA, 20)
+prob[1] = 1                                       # probability of first payment is 1
+for(i in 1:19){				           # get the probabilities from the lifetable object
+  prob[i+1] <- pxt(soa08, x = 40, t = i)            # [i+1] for indexing
+}
+payments <- rep(1000, 20)
+interest <- .08
+years <- 0:19				 	# first payment is at year “0” because it's an annuity-due
+presentValue(cashFlows = payments, timeIds = years, interestRates = interest, 
+                      probabilities = prob)
+```
 
 
-##3.1
 
-We’ll begin by looking at **whole life annuities** which provide for payments until death, so that the present value is $\Upsilon = \bar{a}_\angl{t}$ for all $T \ge 0$. Like the previous module, we’ll assume a payment of 1 and a constant force of interest $\delta$ for the rest of this module. To find the actuarial present value, we set up the integral
+##3.2 Mathematics
 
-\[ \bar{a}_x = \text{E}[\Upsilon] =  \int_{0}^{\infty} \bar{a}_\angl{t}  \ _{t}p_{x} \ \mu (x+t) \ dt\]
+The current-payment technique is convenient, but how do we know it’s legitimate? For the derivation, we’ll consider a **whole life annuity-due**, which is an annuity that pays at the beginning of each year for every year that (*x*) survives. The present-value random variable, *Y*, is given by $Y = a_{K+1}$, where K is the curtate-future-lifetime of (*x*). The probability associated with the value $a_{K+1}$ is Pr($K=k$) = $_{k}p_{x} q_{x+k}$. We use the definition of expected value to write
+\[
+\text{APV} = \text{E}[Y] = \text{E}[a_{K+1}] = \text{sum}.
+\]
 
-Then using integration by parts, it can be shown that
+Using summation by parts and by taking advantage of some relations, it can be shown that the above converts to
+\[ a_{x} = v^{k} \ _{k}p_{x} \]
+which is the convenient current payment form.
+
+Annuities can also occur with continuous payments. For example, the **whole life annuity** provides for payments until death, so that the present value is $Y = \bar{a}_\angl{t}$ for all $T \ge 0$. Then to find the actuarial present value we assume a constant payment of 1, and a constant force of interest to set up the integral
+\[ \bar{a}_x = \text{E}[Y] =  \int_{0}^{\infty} \bar{a}_\angl{t}  \ _{t}p_{x} \ \mu (x+t) \ dt\]
+
+and use integration by parts to yield
 \[ \bar{a}_x = \int_{0}^{\infty} v^t \ _{t}p_{x} \ dt = \int_{0}^{\infty}\ _{t}\text{E}_{x} \ dt . \]
 
-
-The above is known as the **current payment technique** for finding the actuarial present value. This makes sense for the expected value of the annuity because it looks like we’re discounting a payment with $v_t$ and also multiplying by the probability that a payment is made at time $t$.
-
-In general, the current payment technique can be thought of as
+In general, the current payment technique for continuous annuities can be thought of as
 \[ APV = \int_{0}^{\infty} v^{t}\ \text{Pr[payment made at time}\ t\text{]} \times [\text{Payment rate at time}\ t] \ dt \]
 
-\vspace{1cm}
+Similar to what we saw in the life insurance module, there are many different types of annuities that we can create by changing when the payments occur, and their amounts. They can all be written in the intuitive current payment form following derivations very similar to the one above.
 
-Slightly different from the whole life annuity, is the **n-year temporary life annuity**, which is payable continuously while (*x*) survives during the next *n* years. Now we define the present value of a benefits random variable as
-
-\[ \Upsilon =  \left\{
-\begin{array}{ll}
-      \bar{a}_\angl{T} & 0 \le T \le n \\
-      \bar{a}_\angl{n}  & T \ge n. \\
-\end{array} 
-\right. \]
-
-The clear difference between this and the whole life annuity is that $\Upsilon$ for the *n*-year is limited to $a_\angl{n}$. The actuarial present value is denoted with $\bar{a}_\angl{x:n}$ and equals
-
-\[
-\bar{a}_\angl{x:n} = \text{E}[\Upsilon] = \int_{0}^{\infty} \bar{a}_\angl{T} \ _{t}p_{x}\ \mu (x+t)\  dt + \bar{a}_\angl{n} \ _{n}p_{x}.
-\]
+##Problems
 
 
-Then, using integration by parts gives
-\[
-\bar{a}_\angl{x:n} = \int_{0}^{n} v^{t} \ _{t}p_{x}\ dt 
-\]
-
-Note that this resembles the current payment form, and differs from the whole life annuity only in the limits of integration. 
-
-\vspace{1cm}
-
-Similar to this is the **n-year deferred whole life annuity** which only makes payments after time *n*. The present value random variable is defined
-\[
-\Upsilon = \left\{
-\begin{array}{ll}
-      0  & 0 \le T \le n \\
-      v^n\  \bar{a}_{\angl{T-n}}  & T \ge n. \\
-\end{array} 
-\right.
-\]
-
-Like the other annuities we’ve looked at, the derivation of the APV of an *n*-year deferred whole life annuity is straightforward, and eventually boils down to the more intuitive current payment form:
-\[
-_{n\vert}\bar{a}_{x} = \int_{n}^{\infty}v^t \ _{t}p_{x} \ dt.
-\]
-
-\vspace{1cm}
-
-We’ll now look at a type of whole life annuity that has a guarantee of payments for the first *n* years, called an **n-year certain and life annuity**. The present value of the annuity payments is
-
-\[ \Upsilon =  \left\{
-\begin{array}{ll}
-      \bar{a}_\angl{n} &  T \le n \\
-      \bar{a}_\angl{T}  & T > n. \\
-\end{array} 
-\right. \]
-
-Here, that is
-
-\[
-\bar{a}_{\overline{x:\angl{n}}} = a_\angl{n} +  \int_{n}^{\infty}\ v^t \ _{t}p_{x} \ dt.
-\]
-
-where we adopt the new symbol $\bar{a}_{\overline{x:\angl{n}}}$ to indicate that the payments continue until max[*T(x), n*]. The structure of this APV makes sense because the person is guaranteed the payments from $a_\angl{n}$, but we must account for the probability of the payments after time *n* in the integral.
