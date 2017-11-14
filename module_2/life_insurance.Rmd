@@ -6,24 +6,27 @@ header-includes:
    - \usepackage{actuarialangle}
 output: pdf_document
 ---
-```{r include=FALSE, cache=FALSE}
+```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
 library(lifecontingencies)
 ```
 
 #Introduction
 
-Life insurance is a contract between an insurance company and a policy holder where the insurer agrees to pay a sum of money in exchange for a premium paid by the insured. The purpose of life insurance is to mitigate the financial impact that results from the premature death of the insured. Death is indeed a random event, and actuaries in life insurance are tasked with developing systems that account for the probability of death and the payments to be made. This can be done in a variety of ways. In this section we aim to introduce the main types of life insurance and how these models are derived using basic principles of probability and finance. By the end of this module, the reader should have an understanding of the basics of life insurance, and some insight on how actuaries deal with these problems in real life.
+Life insurance is a contract between an insurance company and a policy holder where the insurer agrees to pay a sum of money contingent upon a life event (e.g. death). Death is indeed a random event, and actuaries in life insurance are tasked with developing systems that account for the probability of death and the payments to be made. This can be done in a variety of ways. In this section we aim to introduce the main types of life insurance and how these models are derived using basic principles of probability and finance. By the end of this module, the reader should have an understanding of the basics of life insurance, and some insight on how actuaries deal with these problems in real life.
 
 #2.1 Basic Insurance Computations
 
-A major component of life insurance is the amount that the insurer pays, which we call the benefit. The benefit can of course be any positive value, but for our introduction we will only consider benefits of 0 or 1. Recall that the curtate future lifetime, *k*, is the number of future years completed by (*x*) prior to death. We base our models around the curtate future lifetime because we are concerned with insurances payable at the end of the year of death. We rely on slight variations of the benefit function, $b_{k+1}$, and the discount function, $v_{k+1}$, where $v_{k+1}$ is the discount factor from the time of the payment to the time of policy issue. 
+A major component of life insurance is the amount that the insurer pays, which we call the benefit. The benefit can of course be any positive value, but for our introduction we will only consider benefits of 0 or 1. Since insurance depends on mortality, we must also consider the future lifetime random variable, T. 
 
-Now we will write the present value of the benefit as the random variable, $z_{k+1}$, which we will denote $Z$. We now have
-\[Z=b_{k+1}\ v_{k+1}\].
+For most examples this module, we actually base the models around the *curtate future lifetime* because we focus on insurances payable at the end of the year of death. Recall that the curtate future lifetime, *k*, is the number of future years completed by (*x*) prior to death. We will also make the assumptions that all benefits are paid on December 31, all contracts are issued January 1, and death can occur at any point in the year . This is important to remember when defining functions that involve *k*.
 
-The expected value of $Z$, is what we call the **actuarial present value** (APV) of the insurance. The actuarial present value takes the time value of money concept, and adjusts it for the probability of payment at a given time. To get a better feel for actuarial present value, we’ll compute it for a simple case.
 
-Suppose a person is going to die at some point during the next four years, and there is a policy that pays 1 at the end of each year *only if* the insured dies during that year (i.e. $b_T$ = 1 or 0 depending on death). With a discount rate of .08 and a .25 probability of payment each year, we have
+We rely on slight variations of the benefit function, $b_{t}$, and the discount function, $v_{t}$, where $v_{t}$ is the discount factor from the time of the payment to the time of policy issue. In the examples using curtate future lifetime, the subscripts become *k+1*. Imagine a person that purchased life insurance on January 1st, and then dies three months later. From the perspective of the beginning of the year, this makes their future lifetime $T = \frac{3}{12}$, and their curtate future lifetime 0 since they did not survive a complete year. The assumption is the benefit is paid at the end of the year at time 1, and it is discounted from time 1, so the subscripts must be k+1 = 0+1 = 1.
+
+
+The present value of a benefit paid at time T is $b_T v_t$. Since T is a random variable, so is the present value of the payments, Z = $b_T v_T$. The expected value of the random variable $Z$, is what we call the **actuarial present value** (APV) of the insurance. The actuarial present value takes the time value of money concept, and adjusts it for the probability of payment at a given time. To get a better feel for actuarial present value, we’ll compute it for a simple case.
+
+Suppose a person is going to die at some point during the next four years, and there is a policy that pays 1 at the end of each year *only if* the insured dies during that year (i.e. $b_T$ = 1 or 0 depending on death). Using an interest rate of .08 and a .25 probability of payment each year, we have
 \[ 
 \text{E}[Z] = \text{APV} = (1)(.25)(v^1) + (1)(.25)(v^2) + (1)(.25)(v^3) + (1)(.25)(v^4) \approx 0.828.
 \]
@@ -37,28 +40,33 @@ Or in the opposite extreme case,
 \text{E}[Z] = \text{APV} = (1)(.01)(v^1) + (1)(.01)(v^2) + (1)(.01)(v^3) + (1)(.97)(v^4) \approx 0.739.
 \]
 
-In the unit payment case, the actuarial present value behaves as we expect it to from time value of money principles, with the probabilities acting as “payments.” The reader may have noticed something about the nature of the probabilities that we were using in the examples above. They are exactly the probability concepts that we introduced in the life tables modules. For example, in the example directly above, the first probability of payment, .01, is the probability that a life dies in the first year. The second .01 is the probability that a life survives the first year, and then dies during the second year. The last probability, .97, is the probability that the life survives the first three years, and dies the fourth year.
+In the unit payment case, the actuarial present value behaves as we expect it to from time value of money principles, with the probabilities acting as “payments.” The reader may have noticed something about the nature of the probabilities that we were using in the examples above. They are exactly the probability concepts that we introduced in the life tables modules. For example, in the example directly above, the first probability of payment, .01, is the probability that a life dies in the first year. The second .01 is the probability that a life survives the first year, and then dies during the second year. The last probability, .97, is the probability that the life survives the first three years, and dies the fourth year. 
 
-Remembering the notation from the last module, we can write the general formula for our above examples as
+
+Those probabilities are calculated using *p* and *q* for each year. With the use of this notation from the last module, we can write the general formula for the specific examples above as
 \[
 A^{1}_{x:\angl{n}} = \text{E}[Z] = \sum_{k=0}^{n-1} v^{k+1} \ _{k}p_{x} \ q_{x+k}
 \]
 
+This can be further generalized to 
+\[
+APV = \text{E}[Z] = \sum_{k=0}^{\infty} v^{t} \ _{t}p_{x} \ q_{x+t}.
+\]
 
 
 #2.2 More On How Insurance Works
 
-Now that we have a basic idea of the computations involved for insurance on a single life, we can look at a larger example and its implications. Imagine we are working for a life insurance company, where 10,000 people of age 50 buy a one year term insurance policy with a benefit of $55,000. Each of the insured pays an annual premium of $500 at the beginning of the term so the insurance company collects (10,000)($500) = $5,000,000. The life tables for this group tell us that we can expect 75 people to die in the next year, so we expect to pay out total benefits of ($55,0000)(75) = $4,125,000 one year from now. Discounting at a rate of .08 gives an actuarial present value of approximately $3.8 million. 
+Now that we have a basic idea of the computations involved for insurance on a single life, we can look at a larger example and its implications. Imagine we are working for a life insurance company, where 10,000 people of age 50 buy a one year term insurance policy with a benefit of $55,000. Each of the insured pays an annual premium of $500 at the beginning of the term so the insurance company collects (10,000)($500) = $5,000,000. The life tables for this group tell us that we can expect 75 people to die in the next year, so we expect to pay out total benefits of ($55,0000)(75) = $4,125,000 one year from now. Discounting at a rate of .08 gives an actuarial present value of approximately $3.8 million, so the expected profit is $1.2 million. Of course, this is just an estimation. In reality, there will be variability, in particular to mortality. The nature of this variability will be explored in Module 5.
 
-Let’s extend this general idea over the course of four years. Imagine we started out with a group of 10,000 people, and charged them each $500 at the beginning of each year for life insurance. Like the previous example, the insurance pays out $55,000 at the end of the year of death, and we use a discount rate of .08. We may get a situation that looks like the table below.
-
-\vspace{.5cm}
-
-![Alt text](payout_table)
+Let’s extend this general idea over the course of four years. Imagine we started out with a group of 10,000 people, and charged them each $500 at the beginning of each year for life insurance. Like the previous example, the insurance pays out $55,000 at the end of the year of death, and we use a interest rate of .08. We may get a situation that looks like the table below.
 
 \vspace{.5cm}
 
-One can imagine a table like this that continues until we are left with no more lives. In this example, it’s clear the actuaries have a lot to take into account when deciding how to price the insurance. The type of policyholders, length of term, benefit amount, survivorship, and discount rates are all important factors to track and predict when trying to make an accurate model. These problems quickly become more difficult as we add more detail and variation in the important factors, but the concepts remain the same. In the following section, we will introduce a few of the main types of insurance and the mathematical detail behind them.
+![Alt text](payout_table.png)
+
+\vspace{.5cm}
+
+One can imagine a table like this that continues until we are left with no more lives. In this example, it’s clear the actuaries have a lot to take into account when deciding how to price the insurance. The type of policyholders, length of term, benefit amount, survivorship, and interest rates are all important factors to track and predict when trying to make an accurate model. These problems quickly become more difficult as we add more detail and variation in the important factors, but the concepts remain the same. In the following section, we will introduce a few of the main types of insurance and the mathematical detail behind them.
 
 
 
@@ -84,11 +92,16 @@ This is the model for **n-year term life insurance**. Here we have defined $b_t$
 \end{array} 
 \right. \]
 
-Another type of insurance pays a benefit regardless of the time it takes for the death of (*x*), called **whole-life insurance**. We make a slight adjustment to the APV formula written above and let $n \rightarrow \infty$, giving
+\vspace{.5cm}
+
+Another type of insurance pays a benefit regardless of the time it takes for the death of (*x*), called **whole-life insurance**. We make a slight adjustment to the APV formula above and write
 \[
-A_{x} = \text{E}[Z] = \sum_{k=0}^{\infty} \ v^{k+1} \ _{k}p_{x} \ q_{x+k}
+A_{x} = \text{E}[Z] = \sum_{k=0}^{\infty} \ v^{k+1} \ _{k}p_{x} \ q_{x+k}.
 \]
-Our definitions of $b_t$, $v_t$, and $Z$ from the previous example don’t change except for now the curtate future lifetime can be any nonnegative integer.
+In this case, we let $b_{k+1} = 1$ and $n \rightarrow \infty$.
+
+\vspace{.5cm}
+
 
 An **n-year endowment insurance** pays a benefit if the insured dies within *n* years, and also pays if the insured survives at least *n* years. This gives the functions
 \[b_{k+1} = 1 , \hspace{.5cm} k = 0, 1, … ,\]
@@ -104,29 +117,54 @@ An **n-year endowment insurance** pays a benefit if the insured dies within *n* 
       v^{n} &k = n, n+1, ..., \\
 \end{array} 
 \right. \]
+In this case, it’s helpful to remember that APVs are expected values of functions of random variables. So far, the only random variable is K, the (curtate) future lifetime, which means we can write the APV for *n-year endowment* as E($v_{X} b_{X}$) where X = min(k+1, n).
 
 The last concept we will introduce before the exercises is the concept of insurance in the continuous context, with a benefit payable at the moment of death. Moving from discrete insurance to continuous insurance is exactly what you would expect from probability theory --- sums become integrals, and probability functions become probability density functions. We also move away from curtate future lifetime, and return to the idea of $T$, the random variable representing future lifetime. This makes our present value function
 \[
 z_{t} = b_{t} v_{t}
 \]
 
-Similar to the discrete case, we redefine $z_t$, $b_t$, and $v_t$ depending on what type of insurance we have. When looking at the continuous version of *n*-year term life insurance, let
+Similar to the discrete case, we redefine $z_t$, $b_t$, and $v_t$ depending on what type of insurance we have. When looking at the continuous version of whole life insurance, let
+$$
+\begin{aligned}
+b_t &=  1 \hspace{.5cm} t\ge0, \\
+v_t &= v^t \hspace{.5cm} t\ge0, \\
+Z &= v^t \hspace{.5cm} t\ge0. \\
+\end{aligned}
+$$
+and then we can write the APV as
+
+\[ \bar{A}_{x} = E[Z]= \int_{o}^{\infty}\ z_t\ f_T (t)\ dt = \int_{0}^{\infty} v^t\ _{t}p_x\ \mu_x (t)\ dt \]
+
+For example, assume the pdf of T for (x) is assumed to be
+\[ f_{t}(t) =  \left\{
+\begin{array}{ll}
+      1/85 & 0 \le t \le 85 \\
+      0 & \text{elsewhere}. \\
+\end{array} 
+\right. \]
+
+With a force of interest, $\delta$, we can calculate the actuarial present value as
+\[ \bar{A}_{x} = E[Z]= \int_{o}^{\infty}\ z_t\ f_T (t)\ dt = \int_{0}^{85} e^{-\delta t} \frac{1}{85}\ dt = \frac{1-e^{-85\delta}}{85\delta}.\]
+
+\vspace{.5cm}
+
+As another example of the continuous case, the **$n$-year pure endowment** provides a payment at the end of the *n*th year if the insured survives at least *n* years from the time of the policy issue. Now we let
 \[ b_t =  \left\{
 \begin{array}{ll}
-      1 & t\le n \\
-      0 & t > n, \\
+      0 & t\le n \\
+      1 & t > n, \\
 \end{array} 
 \right. \]
 \[v_t = v^{t} \hspace{.5cm} t\ge 0 ,\]
 \[ Z =  \left\{
 \begin{array}{ll}
-      v^{T} & T\le n \\
-      0 & T > n. \\
+      0 & T\le n \\
+      v^n & T > n. \\
 \end{array} 
 \right. \]
-and then we can write the APV as
-
-\[ \bar{A}_{x:n}^1 = E[Z] = E[z_t] = \int_{0}^{\infty}\ z_t\ f_T (t)\ dt = \int_{0}^{n} v^t\ _{t}p_x\ \mu_x (t)\ dt\ = \int_{0}^{n} e^{-\delta t}\ _{t}p_x\ \mu_x (t)\ dt \]
+Then we add that $Z =v^n Y$, where $Y$ is the indicator with the value 1 if if the insured survives to $(x+n)$. With this endowment, the size and time of the payment is predetermined so the only uncertainty in this problem is whether or not the payment occurs. Noting that $Y$ is a Bernoulli random variable, it’s clear that
+\[ Ax:n = E[Z] = v^n \ E[Y] = v^n \ _{n}p_x .\]
 
 
 \vspace{1cm}
@@ -145,67 +183,22 @@ Expected curtate lifetime
 
 The lifecontingencies package introduced in the first module has some functions that are useful in the calculations that we saw in these lessons. For example, the package has a present value function that calculates the present value as learned in finance class, but it also has the option to input probabilities as an argument. 
 
-For example, observe the use of the function to compute the actuarial present value of the first example from this module with a discount rate of .08 and .25 probability of payment each year.
+For example, observe the use of the function to compute the actuarial present value of the first example from this module, *n*-year term life insurance  with an interest rate of .08 and .25 probability of payment each year.
 
 ```{r}
 presentValue(cashFlows = c(1, 1, 1, 1), timeIds = c(1, 2, 3, 4), interest = .08, 
              probabilities = c(.25, .25, .25, .25))
 ```
 
-This agrees from the calculation that we did by hand earlier.
+This agrees with the calculation that we did by hand earlier.
 
 #Problems
 
-##1.
-The pdf of future lifetime, T, for (x) is assumed to be
-\[ f_{t}(t) =  \left\{
-\begin{array}{ll}
-      1/60 & 0 \le t \le 60 \\
-      0 & \text{elsewhere}. \\
-\end{array} 
-\right. \]
-
-a. Calculate the actuarial present value at a force of interest $\delta$ for a whole life insurance of a unit amount issued to (x).
-b. Calculate the variance.
-
-##2.
-Now, assume we are interested in 10 independent individuals. Each ($x$) is insured for 5 units payable at the moment of death.
-
-a. Write the functions $b_t$, $v_t$, and Z for an individual.
-
-b. Calculate the actuarial present value and variance for the group of individuals with constant force of mortality, $\mu$ = .02, and assume the funds are to be withdrawn from a fund earning $\delta$ = .04. (Hint: Find the APV for a single individual first.)
-
-c. Calculate the minimum amount at $t$ = 0 so that the probability is approximately .99 that there are sufficient funds to pay the benefits for the group. (Hint: Use a normal approximation.)
-
-##3. 
-Example where they need to write the functions for one of the types of insurance that I didn’t cover. Find E[Z] and Var(Z). Maybe more?
-##4
-Example using lifecontingencies functions for APV
-
-\newpage
-
-#Solutions
-##1.
-a. Since this is whole life insurance,
-\[ \bar{A}_{x} = E[Z]= \int_{o}^{\infty}\ z_t\ f_T (t)\ dt = \int_{0}^{60} e^{-\delta t} \frac{1}{60}\ dt = frac{1-e^-60\delta}{60\delta}.\]
 
 
-b.  Using the rule of moments,
-\[Var(Z) = E[Z^2] - (E[Z])^2 = \frac{1-e^{-60(2\delta)}}{60(2\delta)} - \left(\frac{1-e^{-60\delta}}{60\delta}\right)^2 \]
 
 
-##2.
-a. $$
-\begin{aligned}
-b_t &=  5 \hspace{.5cm} t\ge0, \\
-v_t &= v^t \hspace{.5cm} t\ge0, \\
-Z &= 5v^t \hspace{.5cm} T\ge0. \\
-\end{aligned}
-$$
 
-b. 
-
-c. 
 
 
 
