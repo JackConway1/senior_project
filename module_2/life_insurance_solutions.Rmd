@@ -1,0 +1,10 @@
+---
+title: "life_insurance_solutions"
+author: "Marcus Milazzo"
+date: "11/21/2017"
+output: pdf_document
+---
+
+![Alt text](problem1.1.png)\
+![Alt text](problem1.2.png)\
+![Alt text](problem1.3.png)\

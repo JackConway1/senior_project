@@ -58,11 +58,11 @@ APV = \text{E}[Z] = \sum_{k=0}^{\infty} v^{t} \ _{t}p_{x} \ q_{x+t}.
 
 Now that we have a basic idea of the computations involved for insurance on a single life, we can look at a larger example and its implications. Imagine we are working for a life insurance company, where 10,000 people of age 50 buy a one year term insurance policy with a benefit of $55,000. Each of the insured pays an annual premium of $500 at the beginning of the term so the insurance company collects (10,000)($500) = $5,000,000. The life tables for this group tell us that we can expect 75 people to die in the next year, so we expect to pay out total benefits of ($55,0000)(75) = $4,125,000 one year from now. Discounting at a rate of .08 gives an actuarial present value of approximately $3.8 million, so the expected profit is $1.2 million. Of course, this is just an estimation. In reality, there will be variability, in particular to mortality. The nature of this variability will be explored in Module 5.
 
-Let’s extend this general idea over the course of four years. Imagine we started out with a group of 10,000 people, and charged them each $500 at the beginning of each year for life insurance. Like the previous example, the insurance pays out $55,000 at the end of the year of death, and we use a interest rate of .08. We may get a situation that looks like the table below.
+Let’s extend this general idea over the course of four years. Imagine we started out with a group of 10,000 people, and charged them each $500 at the beginning of each year for life insurance. Like the previous example, the insurance pays out $55,000 at the end of the year of death, and we use an interest rate of .08. We may get a situation that looks like the table below.
 
 \vspace{.5cm}
 
-![Alt text](payout_table.png)
+![Alt text](payout_table.png)\
 
 \vspace{.5cm}
 
@@ -118,6 +118,10 @@ An **n-year endowment insurance** pays a benefit if the insured dies within *n* 
 \end{array} 
 \right. \]
 In this case, it’s helpful to remember that APVs are expected values of functions of random variables. So far, the only random variable is K, the (curtate) future lifetime, which means we can write the APV for *n-year endowment* as E($v_{X} b_{X}$) where X = min(k+1, n).
+
+
+
+\vspace{.5cm}
 
 The last concept we will introduce before the exercises is the concept of insurance in the continuous context, with a benefit payable at the moment of death. Moving from discrete insurance to continuous insurance is exactly what you would expect from probability theory --- sums become integrals, and probability functions become probability density functions. We also move away from curtate future lifetime, and return to the idea of $T$, the random variable representing future lifetime. This makes our present value function
 \[
@@ -175,13 +179,9 @@ As one can imagine, there are many types of insurance that can be created with s
 
 #2.4 Life Insurance in R
 
-Present value function
-
-Present value with probabilities - APV
-
 Expected curtate lifetime
 
-The lifecontingencies package introduced in the first module has some functions that are useful in the calculations that we saw in these lessons. For example, the package has a present value function that calculates the present value as learned in finance class, but it also has the option to input probabilities as an argument. 
+The lifecontingencies package introduced in the first module has some functions that are useful for the calculations that we saw in these lessons. For example, the package has a present value function that calculates the present value as learned in finance class, but it also has the option to input probabilities to compute APV.
 
 For example, observe the use of the function to compute the actuarial present value of the first example from this module, *n*-year term life insurance  with an interest rate of .08 and .25 probability of payment each year.
 
@@ -192,14 +192,8 @@ presentValue(cashFlows = c(1, 1, 1, 1), timeIds = c(1, 2, 3, 4), interest = .08,
 
 This agrees with the calculation that we did by hand earlier.
 
+
 #Problems
 
 
-
-
-
-
-
-
-
-
+Write problem here based off solution in solutions
