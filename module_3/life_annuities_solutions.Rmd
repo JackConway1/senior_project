@@ -4,7 +4,7 @@ author: "Jack Conway and Marcus Milazzo"
 date: "9/28/2017"
 output: pdf_document
 ---
-
+1.
 ```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
 library(lifecontingencies)
 ```
@@ -16,3 +16,18 @@ The actuarial present value is $8,432.90.
 This is significantly less than the $10,209.06 APV that we computed for the 40 year old. Although both annuities were computed at the same interest rate over the same amount of years, we see a large difference due to the differing probabilities in the life tables.
 
 The probability of survival in each respective time step was lower for the 65 year old, relative to the 40 year old. It makes sense that this would lead to a lower actuarial present value. We would expect the value of the life annuity, which depends on mortality, to be lower if there's less chance of making the payments.
+
+2.
+```{r}
+data("soa08")
+prob_2 <- rep(NA, 111)                    # 111 because lifetable ends at 141
+prob_2[1] = 1                              # probability of first payment is 1
+for(i in 1:110){				  # get the probabilities from the rest of the lifetable
+  prob_2[i+1] <- pxt(soa08, x = 30, t = i)            # [i+1] for indexing
+}
+payments_2 <- rep(10000, 111)
+interest_2 <- .06
+years_2 <- 0:110			# first payment is at year “0” because it's an annuity-due
+presentValue(cashFlows = payments_2, timeIds = years_2, interestRates = interest_2, 
+                      probabilities = prob_2)
+```

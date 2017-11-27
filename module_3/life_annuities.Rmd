@@ -1,7 +1,7 @@
 ---
 title: "Life Annuities"
 author: "Jack Conway and Marcus Milazzo"
-date: "9/28/2017"
+date: "12/9/2017"
 header-includes:
    - \usepackage{actuarialangle}
 output: pdf_document
@@ -25,7 +25,7 @@ Suppose for the next 5 years the probability of payment has been determined from
 \[ \text{APV} = (1)(.95) + (1)(.95)v^1 + (1)(.95)v^2 + (1)(.95)v^3 + (1)(.95)v^4 = 4.02615 \]
 
 The above method for calculating APV is known as the **current-payment technique**. This intuitive method is simply discounting the payment being made, and multiplying by the probability that the payment is made in the first place. We write this generally as
-\[ a_{x} = v^{k} \ _{k}p_{x} . \]
+\[ \ddot{a}_{x} = \sum_{k=0}^{\infty} \ v^{k} \ _{k}p_{x} . \]
 
 \vspace{.25cm}
 
@@ -50,20 +50,47 @@ presentValue(cashFlows = payments, timeIds = years, interestRates = interest,
 ```
 \vspace{.5cm}
 
+\newpage
+
 More often than not, actuaries are utilizing tables in spreadsheet tools like Excel. Here is what a table may look like for computing the APV in the example above.
 
 ![APV Table](apv_table_demo.png)\
 
-#3.2 Mathematics
+\newpage
 
-The current-payment technique is convenient, but how do we know it’s legitimate? For the derivation, we’ll consider a **whole life annuity-due**, which is an annuity that pays at the beginning of each year for every year that (*x*) survives. The present-value random variable, *Y*, is given by $Y = a_{K+1}$, where K is the curtate-future-lifetime of (*x*). The probability associated with the value $a_{K+1}$ is Pr($K=k$) = $_{k}p_{x} q_{x+k}$. We use the definition of expected value to write
+##3.2 Mathematics
+
+The current-payment technique is convenient, but how do we know it’s legitimate? For the derivation, we’ll consider a **whole life annuity-due**, which is an annuity that pays at the beginning of each year for every year that (*x*) survives. The present-value random variable, *Y*, is given by $Y = a_{K+1}$, where K is the curtate-future-lifetime of (*x*). The probability associated with the value $a_{K+1}$ is Pr($K=k$) = $_{k}p_{x}\ q_{x+k}$. We use the definition of expected value to write
 \[
-\text{APV} = \text{E}[Y] = \text{E}[a_{K+1}] = \text{sum}.
+\text{APV} = \text{E}[Y] = \text{E}[a_{K+1}] = \sum_{k=0}^{\infty} \ \ddot{a}_{\angl{k+1}} \ _{k}p_{x} \ q_{x+k}.
 \]
 
 Using summation by parts and by taking advantage of some relations, it can be shown that the above converts to
-\[ a_{x} = v^{k} \ _{k}p_{x} \]
+\[ \ddot{a}_{x} = \sum_{k=0}^{\infty} \ v^{k} \ _{k}p_{x} \]
 which is the convenient current payment form.
+
+Let's return to the example of the 40 year old from earlier in the module, but now, they are interested in purchasing life insurance using a whole life annuity with $1000 payments. The summation would be
+\[
+APV = 1000[1 + (p_{40})v^{1} + (_{2}p_{40}) v^{2} + \textellipsis]
+\]
+
+
+In reality, we do not have probability estimates out to infinity, so we use what the life table can provide. In this case, the life table goes out to 141 years, at which point the probability of survival rapidly approaches 0. The *lifecontingencies* package computes the APV as follows
+
+
+```{r}
+data("soa08")
+prob_whole_life <- rep(NA, 101)                    # 101 because lifetable ends at 141
+prob_whole_life[1] = 1                              # probability of first payment is 1
+for(i in 1:100){				  # get the probabilities from the rest of the lifetable
+  prob_whole_life[i+1] <- pxt(soa08, x = 40, t = i)            # [i+1] for indexing
+}
+payments <- rep(1000, 101)
+interest <- .08
+years <- 0:100				# first payment is at year “0” because it's an annuity-due
+presentValue(cashFlows = payments, timeIds = years, interestRates = interest, 
+                      probabilities = prob_whole_life)
+```
 
 \vspace{.25cm}
 
@@ -78,11 +105,11 @@ In general, the current payment technique for continuous annuities can be though
 
 Similar to what we saw in the life insurance module, there are many different types of annuities that we can create by changing when the payments occur, and their amounts. They can all be written in the intuitive current payment form following derivations very similar to the one above.
 
-#Problems
+\newpage
+
+##Problems
 
 1. A 65 year old man decides to use a 20 year life annuity to purchase his life insurance. The payments occur at the beginning of the year, and an actuary has prepared a life table which corresponds to the man. Using the life_table_65 text file, calculate the APV of this annuity in Excel. 
 How does this APV compare to the 20 year life annuity computed for the 40 year old person in the earlier example? Why?
 
-\vspace{.25cm}
-
-2. 
+2. Use the *presentValue* function to compute the APV of a whole life annuity for (30) with payments of $1000 at the beginning of every year. Use the soa08 data table from the *lifecontingencies* package.
