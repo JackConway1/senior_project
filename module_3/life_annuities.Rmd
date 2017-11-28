@@ -1,5 +1,5 @@
 ---
-title: "Life Annuities"
+title: "Module 3: Life Annuities"
 author: "Jack Conway and Marcus Milazzo"
 date: "12/9/2017"
 header-includes:
@@ -9,7 +9,6 @@ output: pdf_document
 ```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
 library(lifecontingencies)
 ```
-
 
 #Introduction
 
@@ -112,4 +111,37 @@ Similar to what we saw in the life insurance module, there are many different ty
 1. A 65 year old man decides to use a 20 year life annuity to purchase his life insurance. The payments occur at the beginning of the year, and an actuary has prepared a life table which corresponds to the man. Using the life_table_65 text file, calculate the APV of this annuity in Excel. 
 How does this APV compare to the 20 year life annuity computed for the 40 year old person in the earlier example? Why?
 
-2. Use the *presentValue* function to compute the APV of a whole life annuity for (30) with payments of $1000 at the beginning of every year. Use the soa08 data table from the *lifecontingencies* package.
+2. Use the *presentValue* function to compute the APV of a whole life annuity for (30) with payments of $10,000 at the beginning of every year and an interest rate of .06. Use the soa08 data table from the *lifecontingencies* package.
+
+\newpage
+
+##Solutions
+
+1.
+```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
+library(lifecontingencies)
+```
+
+![APV](apv_table_problem1.png)\
+
+The actuarial present value is $8,432.90.
+
+This is significantly less than the $10,209.06 APV that we computed for the 40 year old. Although both annuities were computed at the same interest rate over the same amount of years, we see a large difference due to the differing probabilities in the life tables.
+
+The probability of survival in each respective time step was lower for the 65 year old, relative to the 40 year old. It makes sense that this would lead to a lower actuarial present value. We would expect the value of the life annuity, which depends on mortality, to be lower if there's less chance of making the payments.
+
+2.
+```{r}
+data("soa08")
+prob_2 <- rep(NA, 111)                    # 111 because lifetable ends at 141
+prob_2[1] = 1                              # probability of first payment is 1
+for(i in 1:110){				  # get the probabilities from the rest of the lifetable
+  prob_2[i+1] <- pxt(soa08, x = 30, t = i)            # [i+1] for indexing
+}
+payments_2 <- rep(10000, 111)
+interest_2 <- .06
+years_2 <- 0:110			# first payment is at year “0” because it's an annuity-due
+presentValue(cashFlows = payments_2, timeIds = years_2, interestRates = interest_2, 
+                      probabilities = prob_2)
+```
+
