@@ -100,7 +100,7 @@ Another type of insurance pays a benefit regardless of the time it takes for the
 \[
 A_{x} = \text{E}[Z] = \sum_{k=0}^{\infty} \ v^{k+1} \ _{k}p_{x} \ q_{x+k}.
 \]
-In this case, we let $b_{k+1} = 1$ and $n \rightarrow \infty$. In practice, we do not have life tables that extend to infinity. The computation of whole-life insurance closely resembles n-year term insurance but we utilize the table to the extent of the number of years that the table covers. An example utilizing software for a computation using an entire life table is covered in the next module.
+In this case, we let $b_{k+1} = 1$ and $n \rightarrow \infty$. In practice, we do not have life tables that extend to infinity. The computation of whole-life insurance closely resembles n-year term insurance but we utilize the table to the extent of the number of years that the table covers. 
 
 \vspace{.5cm}
 
@@ -194,11 +194,27 @@ This agrees with the calculation that we did by hand earlier.
 With curtate future lifetime being relevant to many life insurance computations, actuaries may want to get estimates of the expected future lifetime of  alife. The *lifecontingencies* package also has a quick function for evaluating the expected future lifetime from a life table object. To find the expected lifetime for (10), enter
 ```{r}
 data(soa08Act)
-exn(object = soa08Act, x = 20)
+exn(object = soa08Act, x = 10)
 ```
-So, we expect a 10 year old to live approimately 63 more years based off of this life table.
+So, we expect a 10 year old to live approimately 63 more years based off of this 
+life table.
+
+\newpage
 
 #Problems
 
+There are currently 93,131 people of age 40 that want to purchase a whole life insurance policy that pays $150,000 at the end of the year of death. Your goal is to use the life table, mod2prob1.csv, to evaluate the possibility of collecting a $2,400 yearly premium paid at the beginning of the year. Specifically, compute the actuarial present value of the profit using an interest rate of .04 using Excel.
 
-Write problem here based off solution in solutions
+Hint: See the examples in Section 2.2
+
+\newpage
+
+##Solution
+
+Row 40 of the given life table has 93,131 people, so it can be used to model what we think will happen with this population of 40 year olds that want life insurance.
+
+![Alt text](mod2sol1.1.png)\
+![Alt text](mod2sol1.2.png)\
+![Alt text](mod2sol1.3.png)\
+
+
