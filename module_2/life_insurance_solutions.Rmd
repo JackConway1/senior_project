@@ -1,9 +1,10 @@
 ---
 title: "life_insurance_solutions"
-author: "Marcus Milazzo"
+author: "Jack Conway and Marcus Milazzo"
 date: "11/21/2017"
 output: pdf_document
 ---
+Row 40 of the given life table has 93,131 people, so it can be used to model what we think will happen with this population of 40 year olds that want life insurance.
 
 ![Alt text](mod2sol1.1.png)\
 ![Alt text](mod2sol1.2.png)\

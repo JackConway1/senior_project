@@ -1,5 +1,5 @@
 ---
-title: "Module 3: Life Annuities"
+title: "Life Annuities"
 author: "Jack Conway and Marcus Milazzo"
 date: "12/9/2017"
 header-includes:
@@ -9,6 +9,11 @@ output: pdf_document
 ```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
 library(lifecontingencies)
 ```
+
+#Outstanding Material 
+- Add continuous example to Section 3.2
+- Add continuous problem in problems section
+- More discussion of problems / solutions ?
 
 #Introduction
 
@@ -145,3 +150,14 @@ presentValue(cashFlows = payments_2, timeIds = years_2, interestRates = interest
                       probabilities = prob_2)
 ```
 
+\newpage
+
+## References
+
+The following resources are available for reference and were involved in the making of this module.
+
+Bowers Jr., Newton, et. al. *Actuarial Mathematics*. The Society of Actuaries. 1997.
+
+http://mort.soa.org/ - SOA life tables
+
+https://cran.r-project.org/web/packages/lifecontingencies/lifecontingencies.pdf - lifecontingencies package

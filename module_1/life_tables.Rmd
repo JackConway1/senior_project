@@ -6,8 +6,13 @@ output:
         fig_caption: false
 ---
  
- 
+
 ![Alt text](lifeinsurance.jpg)
+ 
+\newpage
+
+#Outstanding Material
+- Possibly explain solution to problems in detail
  
 \newpage
  
@@ -289,6 +294,8 @@ new_soa.08$ex[1] = sum(new_soa.08$lx * new_soa.08$px)
 ## References
 
 The following resources are available for reference and were involved in the making of this module.
+
+Bowers Jr., Newton, et. al. *Actuarial Mathematics*. The Society of Actuaries. 1997.
 
 http://mort.soa.org/ - SOA life tables
 

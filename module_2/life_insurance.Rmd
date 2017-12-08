@@ -1,5 +1,5 @@
 ---
-title: "Module 2: Life Insurance Draft"
+title: "Module 2: Life Insurance"
 author: "Jack Conway and Marcus Milazzo"
 date: "9/22/2017"
 header-includes:
@@ -9,6 +9,13 @@ output: pdf_document
 ```{r, echo=FALSE, messages = FALSE, warning=FALSE, results='hide'}
 library(lifecontingencies)
 ```
+
+#Outstanding Material
+- Maybe add example of whole-life in section 2.3, but Problem 1 is whole-life.
+- Add example of n-year endowment in 2.3.
+- Add example with numbers after n-year pure endowment in 2.3.
+- Add a problem in the continuous case.
+- Possibly explain the calculations in the table.
 
 #Introduction
 
@@ -102,6 +109,8 @@ A_{x} = \text{E}[Z] = \sum_{k=0}^{\infty} \ v^{k+1} \ _{k}p_{x} \ q_{x+k}.
 \]
 In this case, we let $b_{k+1} = 1$ and $n \rightarrow \infty$. In practice, we do not have life tables that extend to infinity. The computation of whole-life insurance closely resembles n-year term insurance but we utilize the table to the extent of the number of years that the table covers. 
 
+
+
 \vspace{.5cm}
 
 
@@ -172,6 +181,7 @@ Then we add that $Z =v^n Y$, where $Y$ is the indicator with the value 1 if if t
 \[ Ax:n = E[Z] = v^n \ E[Y] = v^n \ _{n}p_x .\]
 
 
+
 \vspace{1cm}
 
 As one can imagine, there are many types of insurance that can be created with slight variations to the functions $z_t$, $b_t$, and $v_t$. For example, insurances that pay with increasing payments, decreasing payments, or payments at different intervals. Over time, one can memorize the details of each type of insurance and endowment, but there is value in understanding where the formulas come from and the ability to recreate them if needed. For reference, summary tables have been provided in the appendix that include the insurances covered in this section and more.
@@ -207,6 +217,7 @@ There are currently 93,131 people of age 40 that want to purchase a whole life i
 
 Hint: See the examples in Section 2.2
 
+
 \newpage
 
 ##Solution
@@ -218,3 +229,15 @@ Row 40 of the given life table has 93,131 people, so it can be used to model wha
 ![Alt text](mod2sol1.3.png)\
 
 
+
+\newpage
+
+## References
+
+The following resources are available for reference and were involved in the making of this module.
+
+Bowers Jr., Newton, et. al. *Actuarial Mathematics*. The Society of Actuaries. 1997.
+
+http://mort.soa.org/ - SOA life tables
+
+https://cran.r-project.org/web/packages/lifecontingencies/lifecontingencies.pdf - lifecontingencies package
