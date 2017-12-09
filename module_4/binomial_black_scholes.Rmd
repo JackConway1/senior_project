@@ -10,6 +10,13 @@ header-includes:
   - \usepackage{pgfplots}
 ---
 
+\newpage 
+
+ # Outstanding Material
+ - Made changes suggested on github. Possibly more problems could be useful.
+ 
+\newpage
+
 ```{r include=FALSE, cache=FALSE}
 library(fOptions)
 library('RUnit')
@@ -18,19 +25,21 @@ library(quantmod)
 
 \qquad Option traders use various option pricing models to calculate theoretical option values. The two models for pricing options discussed in this section are the **Binomial option pricing model** and the **Black Scholes option pricing model**.  
 
-## 1 Binomial Option Pricing Model 
+## 1 No Arbitrage Pricing 
 
-\qquad The **Binomial option pricing model** is a simple way to price options by assuming no arbitrage. Meaning no investment opportunities exist that require zero dollars of investment and provide positive yield. We will demonstrate the idea of no arbitrage pricing in the following example.
+\qquad The **Binomial option pricing model** is a simple way to price options by assuming no arbitrage. This means no investment opportunities exist that require zero dollars of investment and provide positive yield. We will demonstrate the idea of no arbitrage pricing in the following example.
 
-Consider a stock worth 100 at time 0. At time 1 the stock price is either 200 or 50. We will assume a one-period risk free rate: r = 11%.  Our goal is to find the price of a call option with strike price 150 and expiry date at time 1. Remember that a call is an option to buy an asset at the designated strike price at a future time. At time one if the call is exercised, the payoff is either 50 (200-150) or 0 (call won't be exercised at price 50). We will denote the price of the call option at strike price 150 over one period of time as C(150,1).
+Consider a stock worth 100 at time 0. Suppose at time 1 the stock price is either 50 (case 1) or 200 (case 2). For simplicity, we will assume a one-period risk free rate: r = 11%. Like in Cal Poly intro finance classes we can treat this as the effective one period interest rate (It is more typical for SOA problems to give continuous interest rates). Our goal is to find the price of a call option with strike price 150 and expiry date at time 1. Remember that a call is an option to buy an asset at the designated strike price at a future time. At time one if the call is exercised, the payoff is 0 (call won't be exercised at price 50) for case 1 or 50 (200-150) for case 2. We will denote the price of the call option at strike price 150 over one period of time as C(150,1).
 
-|        	| Time 0   	| Time 1 Payoff (50) 	| Time 1 Payoff (200) 	|
+Value at time 1:  
+
+|        	| Time 0   	| Case 1 (50) 	| Case 2 (200) 	|
 |--------	|----------	|---------------------	|--------------------	|
 | Stock  	| 100      	| 50                 	| 200                 	|
 | Option 	| C(150,1) 	| 0                  	| 50                  	|
 
 
-So suppose at time 0 we buy x shares of stock (at price 100x) and y call options (at price C(150,1)y). Then our value at time 1 is either 200x +50y if the stock price is 200. If the stock price is 50 at time one than the value is equal to 50x. Now suppose we choose y so that our payoff is equal.
+So suppose at time 0 we buy x shares of stock (at price 100x) and y call options (at price C(150,1)y). Then our value at time 1 is either 200x +50y if the stock price is 200 (case 2). If the stock price is 50 at time one (case 1) then the value of the portfolio is equal to 50x. Now suppose we choose y call options so that our payoff is equal.
 
 
 
@@ -47,9 +56,9 @@ This implies $C(150,1) = (100 - 50/1.11)/3 = 18.32$.
 
 If C does not equal 18.32 there is an opportunity for arbitrage. Consider if the C(150,1) was priced at 17. If we sell 1 share and buy 3 options we would pay 51 for the options (3\*17) and be payed 100. If we then invest at the risk-free rate in a bank at $\frac{50}{1.11} \approx 45.05 \text{ our total expenses plus income would be } 100 - 51 - 45.05 = 3.95$. So at time 0 we have an income of 3.95.  
 
-At time 1 the share value that we lost from selling it will be equal to -50 at stock price 50. The option will not be exercised and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.  
+At time 1 the share value that we lost from selling it will be equal to -50 at stock price 50 (case 1) since we no longer hold the asset worth \$50. The option will not be exercised and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.  
 
-If the stock price is 200 than the value lost from selling the share will be equal to -200. The options will be exercised for a payoff of 150 ((200-150)\*3) and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.
+If the stock price is 200 (case 2) then the value lost from selling the share will be equal to -200. The options will be exercised for a payoff of 150 ((200-150)\*3) and the invested money will be worth 50. So the value of the portfolio at time 1 will be 0.
 
 |                    	| Time 0 	| Time 1 Payoff (50) 	| Time 1 Payoff (200) 	|
 |--------------------	|--------	|--------------------	|---------------------	|
@@ -59,18 +68,21 @@ If the stock price is 200 than the value lost from selling the share will be equ
 |--------------------	|--------	|--------------------	|---------------------	|
 | Total Payoff       	|   3.95 	|                  0 	|                   0 	|
 
-We can see here that we have a positive payoff at time 0 for no cost since the payoff at time 1 will be 0 whether the stock is worth 50 or 200. Similarly if the call option was more expensive than 18.32 we would take the opposite postion. If we followed the same process as before, but instead we buy 1 share, sell 3 options, and borrow from the bank we would have a positive payoff at 0 and value of 0 at time 1.  
+We can see here that we have a positive payoff at time 0 for no cost since the payoff at time 1 will be 0 whether the stock is worth 50 (case 1) or 200 (case 2). Similarly if the call option was more expensive than 18.32 we would take the opposite postion. If we followed the same process as before, but instead we buy 1 share, sell 3 options, and borrow from the bank we would have a positive payoff at 0 and value of 0 at time 1.  
 
-\qquad This is the idea of arbitrage that there is an opportunity for arbitrage if there is a positive return with no risk of loss. 
+\qquad There is an opportunity for arbitrage if there is a positive return with no risk of loss. 
 
+## 2 Binomial Option Pricing Model 
 
 \qquad The main idea of the **Binomial option pricing model** is that a share of stock can either go up (with probability **p**) or down (with probability **1-p**) over a period of time and we want to price a call option on the stock in a way that allows no arbitrage. 
 
 \qquad In the binomial pricing model we create a binomial tree of prices of the asset across discrete time periods. We look at the price of the asset to calculate the payoff of an option at the discrete time period when the option is callable or putable. We break the time to expiry of the option into periods. In each period, given the price of the underlying asset at the beginning of the period, we assume it can only move to one of two prices at the end of the period. We can then determine the value of the option recursively by starting at the final expiry date, evaluating the value of the uption under each possibility for final price of the underlying asset, and then move backwards through the tree pricing options at each point.    
 
-### 1.1 Risk-neutral One Period Pricing
+### 2.1 Risk-neutral One Period Pricing
 
-\qquad The binomial pricing model assumes a risk-neutral world. Meaning that an investor is not recieving a premium for the added risk of the investment and is indifferent to recieving the risk free rate on an asset. We can then use this to calculate the probability (**p**) the the asset will increase in price by discounting the expected value of the binomial tree by the continuous risk free rate. We find this expected value by multiplying the increased price by **p** and adding this to the decreased price by **(1-p)**.
+\qquad The binomial pricing model assumes a risk-neutral world. Meaning that an investor is not recieving a premium for the added risk of the investment and is indifferent to recieving the risk free rate on an asset. In introductory corporate finance we learned how different assets should be valued at different risk rates due to the underlying risk of the asset. In the risk-neutral world it is not necessary to expect more than the risk-free rate. This makes it easier to price options due to the fact that different people could have different views on the risk of the asset and price the option differently. This is not the case here.
+
+\qquad We can then use this to calculate the probability (**p**) the the asset will increase in price by discounting the expected value of the binomial tree by the continuous risk free rate. We find this expected value by multiplying the increased price by **p** and adding this to the decreased price by **(1-p)**. This is different than the no arbitrage pricing because prices are determined by risk which we quantify through expected payoff values. While this method is preferable due to ease of use, both this method and the no arbitrage example should produce the same value of the option.
 
 Consider a non-dividend paying stock currently priced at 50 and the price will either be 60 or 40 at the end of the year with a risk-free rate of 5%:
 
@@ -99,7 +111,9 @@ $$
 p &= 0.62818
 \end{aligned}
 $$
-We now have the risk-neutral probability that the stock will go up **p = 0.62818**. Now consider that the strike price of a 1-year call option is 55. The main goal of the binomial model is to be able to fairly price this option. To do this let's think about the possible payoffs of the call option. If the underlying stock price reaches the 60, and the strike price is 55, then the call option will be exercised for a payoff of 5. If the underlying stock price decreases to 40, and the strike price is 55, the option will not be exercised and will have a payoff of 0. Given that we now have calculated the risk-neutral probability of the underlying asset increasing or decreasing, we can discount the expected value of the option (the probability of exercising the option times the payoff of the option) at the risk-free rate to find the fair price of the option. A call option premium at a strike price of 55 for a 1 year option is denoted C(55,1). Note that this expected value is discounted at $e^{-hr}$, where here $h=1$.
+We now have the risk-neutral probability that the stock will go up **p = 0.62818**. Now consider that the strike price of a 1-year call option is 55. The main goal of the binomial model is to be able to fairly price this option. To do this let's think about the possible payoffs of the call option. If the underlying stock price reaches the 60, and the strike price is 55, then the call option will be exercised for a payoff of 5. If the underlying stock price decreases to 40, and the strike price is 55, the option will not be exercised and will have a payoff of 0.
+
+\qquad Given that we now have calculated the risk-neutral probability of the underlying asset increasing or decreasing, we can discount the expected value of the option (the probability of exercising the option times the payoff of the option) at the risk-free rate to find the fair price of the option. A call option premium at a strike price of 55 for a 1 year option is denoted C(55,1). Note that this expected value is discounted at $e^{-hr}$, where here $h=1$.
 
 $$
 \begin{aligned}
@@ -109,9 +123,9 @@ C(55,1) &= 2.9877
 \end{aligned}
 $$
 
-So the fair price of a 1-year call option at the strike price of 55 will be \$2.99. Consider a more simple example where we observe 10000 changes in the price of a stock. If we had observed 6500 cases where the price had went up and 3500 where the price of the stock went down, then we would estimate the probability of a stock increasing in price to be $\frac{6500}{10000}= 0.65$. This is the general idea that we want to capture with our estimation of increase.  
+So the fair price of a 1-year call option at the strike price of 55 will be \$2.99. 
 
-### 1.2 Volatility
+### 2.2 Volatility
 
 \qquad The example above is the binomial pricing option for a 1-year non-dividend paying stock. As mentioned before, the time to expiry of the option is broken into periods.  The price of the stock is assumed to go up or down by the same factor in each time period. These factors are commonly denoted as *u*(up) and *d*(down). Here *u* is defined to be greater than or equal to 1, and *d* is defined to be $0 < d \leq 1$. In this case our initial branch went from 50 to either 40 or 60.
 
@@ -129,7 +143,7 @@ d &= 0.8
 $$
 
 
-\qquad The choice of *u* and *d* is not arbitrary. This is where the idea of no arbitrage is important. The upper node must be higher than the result of a  risk-free inverstment, and the lower node must be lower, or else arbitrage would be possible. Either the stock would always be better than the risk-free investment or it would always be worse. This would lead to arbitrage in that you would short as much stock as possible (remember that a short position is borrowing the asset from someone, selling it and then buying it back and returning the asset at a future date to the borrower) and lend the money from the short possition at the risk-free rate, or you would borrow as much as you could at the risk-free rate to buy stock. A risk-free investment of $S$ produces $Se^{rh}$, while stock produces $Se^{\delta h}$
+\qquad It would be reasonable to ask at this point, how do would we get values of *u* and *d* in real life, when it is not provided for us in a practice problem? The choice of *u* and *d* is not arbitrary. This is where the idea of no arbitrage is important. The upper node must be higher than the result of a  risk-free inverstment, and the lower node must be lower, or else arbitrage would be possible. Either the stock would always be better than the risk-free investment or it would always be worse. This would lead to arbitrage in that you would short as much stock as possible (remember that a short position is borrowing the asset from someone, selling it and then buying it back and returning the asset at a future date to the borrower) and lend the money from the short possition at the risk-free rate, or you would borrow as much as you could at the risk-free rate to buy stock. A risk-free investment of $S$ produces $Se^{rh}$, while stock produces $Se^{\delta h}$
 
 $$
 \begin{aligned}
@@ -184,12 +198,12 @@ $$
 
 Where $n$ is the number of ratios, $x_i = \text{ln}\left(S_i/S_{i-1}\right)$, and $p$ is the number of periods per year. This estimate can be used to solve for $u$ and $h$ in the equations above.  
 
-We can use the quantmod package in R to get up to date estimates on recent stocks. For example if we were interested in calculating the volatility of APPL stock we could use this package to estimate it.
+We can use the quantmod package in R to get up to date estimates on recent stocks. For example if we were interested in calculating the volatility of APPL stock we could use this package to estimate it. Note here the volatility produced is a rolling volatility, since volatility is not constant. For the use of getting a singular value we will use the average of the past 25 days.
 
 ```{r}
 options("getSymbols.warning4.0"=FALSE)
 options("getSymbols.yahoo.warning"=FALSE)
-getSymbols("AAPL")
+getSymbols("AAPL",src = "google")
 mean(complete.cases(volatility(OHLC = AAPL,n = 25,calc='close',N = 252)))
 ```
 
@@ -209,11 +223,11 @@ p &= \frac{e^{rh-\delta h} - d}{u-d}
 \end{aligned}
 $$
 
-### 1.3 Risk-neutral Multi-period Pricing 
+### 2.3 Risk-neutral Multi-period Pricing 
 
-\qquad The previous example above (section 1.1) is a one period tree. Consider a put option on the same stock with u = 1.2 and d = 0.8 with a time to expiry of two years. We now have a two period tree. Now for the second period the prices are defined to change by the same factor. From 60, the stock price can go up by a factor of 1.2 (72), or it can go down by a factor of 0.8 (48). 
+\qquad The previous example above (section 1.1) is a one period tree. Consider a put option on the same stock with u = 1.2 and d = 0.8 with a time to expiry of two years. We now have a two period tree. Now for the second period the prices are defined to change by the same factor. From 60, the stock price can go up by a factor of 1.2 (72) (case 1), or it can go down by a factor of 0.8 (48) (case 2). 
 
-Similarly for 40, the stock price can either be 48 or 32. In this case, we price from the final expiry date and work backwards to find the initial price of the call option at each period until we get to the current time period. We will continue to use a risk-free rate of 0.05, a strike price of 60, and a stock that pays no dividends.   
+Similarly for 40, the stock price can either be 48 (case 3) or 32 (case 4). Here we price from the final expiry date and work backwards to find the initial price of the call option at each period until we get to the current time period. We will continue to use a risk-free rate of 0.05, a strike price of 60, and a stock that pays no dividends.   
 
 
 \begin{center}
@@ -244,58 +258,23 @@ p &= \frac{e^{rh-\delta h} - d}{u-d}\\
 &=0.7629
 \end{aligned}
 $$
-Now that we have **p** we want the payoff of the option if exercised at each possibility in two years. Consider the possibilities of final stock prices that we established above of either 72, 48, 48, or 32. The payoffs of exercising the put option at the strike price of 60 would be 0, 12, 12, and 18 respectively.  
+Now that we have **p** we want the payoff of the option if exercised at each possibility in two years. Consider the possibilities of final stock prices that we established above of either 72 (case 1), 48 (case 2), 48 (case 3), or 32 (case 4). The payoffs of exercising the put option at the strike price of 60 would be 0 (case 1), 12 (case 2), 12 (case 3), and 18 (case 4) respectively. As is expected we can use ideas from introductory probability coursework to estimate the probability of each outcome. 
 
 We can think of this path that the stock price takes as a random variable X, that has a Binomial(p = 0.7629, n = 2) distribution and calculate the probability of each outcome.   
 
 For example Pr(X = 2) represents the probability that the stock increased in value at both nodes.   
-$$\text{Pr}(X=2) = {2 \choose{2}} (0.7629)^2 = 0.582$$
+$$\text{Pr}(X=2) = {2 \choose{2}} (0.7629)^2 = 0.582 \qquad \qquad \qquad \text{case 1}$$
 Similarly for Pr(X = 1) and Pr(X = 0)  
 $$
 \begin{aligned}
-\text{Pr}(X = 1) &= {2\choose1} (0.7629)(1-0.7629) = 0.3618\\
-\text{Pr}(X = 0) &= {2\choose0}(1-0.7629)^2 = 0.0562
+\text{Pr}(X = 1) &= {2\choose1} (0.7629)(1-0.7629) = 0.3618 \qquad \text{case 2 and 3}\\
+\text{Pr}(X = 0) &= {2\choose0}(1-0.7629)^2 = 0.0562 \qquad \qquad \qquad \text{case 4}
 \end{aligned}
 $$
-We then use these probabilities to calculate the expected value of the payoff. At $(X = 2)$ the payoff on the put option would be zero, $(X = 1)$ would pay 12, and $(X = 0)$ would pay 18. So the expected value of the put option would be
+We then use these probabilities to calculate the expected value of the payoff. At $(X = 2)$ (case 1) the payoff on the put option would be zero, $(X = 1)$ would pay 12 (case 2 and 3), and $(X = 0)$ would pay 18 (case 4). So the expected value of the put option would be
 
 $$ (0.582)(0) + (0.3618)(12) + (0.0562)(18) = 5.3532 $$
 Discounting this expected payoff at the risk-free rate of 0.05 over two years we have a put premium of $e^{-0.05}(5.3532) = 5.0921$.
-
-### 1.4 Limitations to the Binomial pricing model
-
-\qquad There are clear limitiations to this model. We know that at each point in time that the value of a stock does not have two possible values. There is a continuous distribution of values that this stock price can take and in our current model the only way to account for that is to reduce the time between valuations to smaller and smaller intervals of time. For example, instead of checking the price of the stock at 6 months to instead check the price at each month, day, hour etc. This will change the values of u and d in our equations. In reality the stock price changes continuously and as we adjust these values of u, p, h etc. we essentially are taking the limit as h becomes very close to 0.  
-
-\qquad This limiting process of the binomial formula converges to the Black-Scholes model discussed in section 2 below. This assumes a lognormal distribution of prices and relies on the central limit theorem to show that "as the number of periods into which the fixed length of time to expiration is divided approaches infinity, the probability that the standardized continuously compounded rate of return of the stock through the expiration date is less than or equal to the number z approaches the probability under a standard normal distribution"(Journal of Financial Econmics 7(1979)). 
-
-\qquad This happens because if we take the expected value of the ratio of stock prices, as the time period length becomes close to zero our expected value by the central limit theorem is $\mu t$. Similarly, if we calculate the variance of this ratio after working out the algebra we get $\sigma ^2 t$.
-
-\qquad To think about this let $S_T$ be the price of a stock at time t. In our model of stock prices, we are going to assume that the rate of return on the stock is normally distributed. Suppose $\alpha$ is the continuously compounded annual rate of return. If there were no randomness then we would have $S_T = S_0 e^{\alpha t}$. Since $S_T$ is random we have $S_T = S_0 e^{A t}$ where A is a normally distributed ranom variable, so the ratio is lognormally distributed.
-
-We can simulate this small change to show a nearly continuous spectrum of possible asset prices.
-
-```{r}
-upordown <- c(1.01, 0.99)
-sample.path <- NULL
-value <- NULL
-
-for (i in 1:1000){
-sample.path <-
-    sample(x = upordown,
-           prob = c(.5,.5),
-           replace = TRUE,
-           size = 100)
-
-value[i] <- 
-    50*prod(sample.path)
-}
-
-hist(value,
-     breaks = 1000,
-     xlim=c(0,250),
-     main = "Value of Asset",
-     xlab = "Asset Price($)")
-```
 
 
 \newpage
@@ -305,7 +284,9 @@ hist(value,
 
 
 
-## 2 Black-Scholes Pricing Model
+## 3 Black-Scholes Pricing Model
+
+\qquad As more periods are added on to the multi-period model we get larger binomial trees with *n* possible periods of up and down movement in asset price. We calculate probabilities of (X = x) using a from a Binomial(n, p) distribution. Since we defined earlier that *u* and *d* are constant across periods we have essentially defined X as a sum of independent identically distributed random variables. We can then approximate the probability of possible asset prices using the central limit theorem assuming *n* is sufficiently large as we would in probability classes. With this approximation we can use a normal distribution with mean np and  variance np(1-p) to approximate probabilities of asset prices falling within certain ranges. This transition to a continuous distribution is similar to how we transition from the binomial option pricing model to the Black-Scholes option pricing model.
 
 \qquad The **Black-Scholes pricing model** is used to calculate the theoretical value of European-style options using current stock prices, expected dividends, the option's strike price, risk-free interest rate, time to expiration and expected volatility.
 
@@ -323,14 +304,6 @@ d_2 &= d_1 -\sigma \sqrt{T}
 \end{aligned}
 $$
 $F^P$ indicates a prepaid forward price. $S$ is the underling asset and $K$ is the strike asset.
-
-The assumptions of the Black-Scholes formula are as follows:  
-- Continuously compounded retuns on the stock are normally distributed and independent over time.  
-- Continuously compounded returns on the strike asset are known and constant.  
-- Volatility is known and constant.  
-- Dividends are known and constant.  
-- There are no transaction costs or taxes.  
-- It is possible to short-sell any amount of stock and to borrow any amount of money at the risk-free rate.  
 
 ### 2.1 Black-Scholes Formula for options
 
@@ -370,23 +343,30 @@ From this information given we have $S=30, K=35, r=0.08, \sigma=0.3,t = 0.5,\del
 $$
 \begin{aligned}
 d_1 &= \frac{\text{ln}(30/35) + \left(0.08-0.04+\frac{1}{2}(0.3^2)\right)(0.5)}{0.3\sqrt{0.5}}\\
-&= -0.52633\\
-N(d_1) &= N(-0.52633) = 0.29933\\
-d_2 &= -0.52633 - 0.3\sqrt{0.5} = -0.67633\\
-N(d_2) &= N(-0.67633) = 0.24942\\
-C(30,35,0.3,0.08,0.5,0.04) &= 30e^{-0.5(0.04)}(0.29933) - 35e^{-0.5(.08)}(0.2492)\\
-&= 0.422
+&= -0.5263264\\
+N(d_1) &= N(-0.5263264) = 0.2993307\\
+d_2 &= -0.5263264 - 0.3\sqrt{0.5} = -0.7384584\\
+N(d_2) &= N(-0.7384584) = 0.230118\\
+C(30,35,0.3,0.08,0.5,0.04) &= 30e^{-0.5(0.04)}(0.2993307) - 35e^{-0.5(.08)}(0.230118)\\
+&= 1.063788
 \end{aligned}
 $$
 Similarly for the premium of the put is
 $$
 \begin{aligned}
-N(-d_2) &= 1 - N(d_2) = 0.75058\\
-N(-d_1) &= 1 - N(d_1) = 0.70067\\
-P(30,35,0.3,0.08,0.5,0.04) &= 35e^{-0.5(.08)}(0.75058) - 30e^{-0.5(0.04)}(0.70067)\\
-&= 4.636
+N(-d_2) &= 1 - N(d_2) = 0.7698821\\
+N(-d_1) &= 1 - N(d_1) = 0.7006693\\
+P(30,35,0.3,0.08,0.5,0.04) &= 35e^{-0.5(.08)}(0.7698821) - 30e^{-0.5(0.04)}(0.7006693)\\
+&= 5.285457
 \end{aligned}
 $$
+\qquad We can check these values using the 'fOptions' R package. Be careful here that *b* is defined to be the risk free rate minus the dividend rate.
+
+```{r}
+GBSOption(TypeFlag = "c", S = 30, X = 35, Time = 0.5, r = 0.08, b = 0.04, sigma = 0.3)@price
+GBSOption(TypeFlag = "p", S = 30, X = 35, Time = 0.5, r = 0.08, b = 0.04, sigma = 0.3)@price
+```
+
 
 \qquad We can observe how changes parameters such as strike price, time to expiry, volatility, and initial price affects the option price.
 
@@ -405,7 +385,8 @@ plot(x=K,
      ylab="Option Price",
      xlab="K",
      main="Strike Price vs. Option Price \n Asset Price of 50",
-     col=1)
+     col=1,
+     cex=0.1)
 
 
 S <-
@@ -421,7 +402,8 @@ plot(x=S,
      ylab="Option Price($)",
      xlab="S",
      main="Asset Price vs. Option Price \n Strike Price of 50",
-     col=2)
+     col=2,
+     cex=0.1)
 
 
 V <-
@@ -437,7 +419,8 @@ plot(x=V,
      ylab="Option Price($)",
      xlab="Volatility",
      main="Volatility vs. Option Price \n S = 60 and K = 50",
-     col=3)
+     col=3,
+     cex=0.1)
 
 Timetoexpiry <-
     seq(from=0.01,
@@ -452,9 +435,18 @@ plot(x=Timetoexpiry,
      ylab="Option Price($)",
      xlab="Time to Expiry (Years)",
      main="Time vs. Option Price \n S = 60 and K = 50",
-     col=4)
+     col=4,
+     cex=0.1)
 
 ```
+
+The assumptions of the Black-Scholes formula are as follows:  
+- Continuously compounded retuns on the stock are normally distributed and independent over time.  
+- Continuously compounded returns on the strike asset are known and constant.  
+- Volatility is known and constant.  
+- Dividends are known and constant.  
+- There are no transaction costs or taxes.  
+- It is possible to short-sell any amount of stock and to borrow any amount of money at the risk-free rate.  
 
 
 \newpage
@@ -527,3 +519,17 @@ C(40, 30, 0.2, 0.07, 0.5, 0) &= 40e^{-0.5(0)}N(d_1)-30e^{-0.07(0.5)}N(d_2) \\
 &= 11.05
 \end{aligned}
 $$
+
+
+\newpage
+## References
+
+The following resources are available for reference and were involved in the making of this module.
+
+https://en.wikipedia.org/wiki/Binomial_options_pricing_model
+
+https://www.investopedia.com/terms/b/binomialoptionpricing.asp
+
+https://onlinecourses.science.psu.edu/stat414/node/179
+
+http://www.sjsu.edu/faculty/watkins/binomial.htm

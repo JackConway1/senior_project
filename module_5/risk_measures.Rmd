@@ -1,0 +1,227 @@
+---
+title: "Risk Measures"
+author: "Jack Conway and Marcus Milazzo"
+date: "11/14/2017"
+output: 
+    pdf_document: 
+        fig_caption: false
+header-includes:
+  - \usepackage{tikz}
+  - \usepackage{pgfplots}
+  - \usepackage{amsmath}
+---
+
+\newpage 
+
+ # Outstanding Material
+ - Useful in teaching more in depth concepts learned in BUS 439. Could include other risk measures. 
+ 
+\newpage
+
+
+```{r include=FALSE, cache=FALSE}
+library(PerformanceAnalytics)
+```
+
+# 1. Risk Measures
+
+\qquad One common question that arises in insurance is: how much of a premium should be charged for the risk that an insurance company takes for covering losses? In the insurance industry, actuaries work with loss distributions. The convention in insurance is to treat the loss, $X$, as a random variable that follows some distribution (and is typically assumed to be non-negative). Loss distribnutions are established "either parametrically, non-parametrically, analytically or by Monte Carlo simulation" (*An Introduction to Risk Measures for Actuarial Applications* Hardy). The characteristics of these loss distributions are used for pricing, reserves, and risk management.
+
+\qquad To quantify this risk that the insurance company is carrying, a **risk measure** is used. By definition, a risk measure is a functional mapping of a loss distribution to the real numbers. The Society of Actuaries typically notate this risk measure functional as $H$
+and the loss random variable $X$.
+
+$H: X \rightarrow \mathbb{R}$  
+
+
+## 1.1 Value at Risk
+
+\qquad The **Value at Risk**, or VaR, risk measure is known as the quantile risk measure or quantile premium principle. VaR is always specified with a given confidence level $\alpha$
+– typically $\alpha=95\%$
+or $99\%$
+. The $\alpha$
+-VaR represents the loss that, with probability $\alpha$
+will not be exceeded. In the case where there are multiple values that contain the $\alpha$ threshold, the minimum value is typically used for the value at risk.
+
+For example:
+
+Consider a discrete randome loss variable,
+
+\begin{equation}
+    X=
+    \begin{cases}
+      100, & \text{with probability}\ 0.01 \\
+      50, & \text{with probability}\ 0.04 \\
+      25, & \text{with probability}\ 0.2 \\
+      0, & \text{with probability}\ 0.75
+    \end{cases}
+\end{equation}
+
+From this we can construct the cdf probabilties:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+x   & Pr [X $\leq$ x]  \\
+100 & 1.00                          \\
+50  & .99                           \\
+25  & .95                           \\
+0   & .75                          
+\end{tabular}
+\end{table}
+
+To find the 99th quantile value at risk we would get $X \leq 50$.
+
+In portfolio analysis classes here at Cal Poly we typically use $\alpha = .05$, however in those cases we are looking at the raw value of the portfolio. So in that case, larger losses would come from smaller portfolio and we would be concerned with what is the lowest amount the portfolio could drop to, excluding unlikely events. These unlikely events are quantified by what alpha level is set. However, here our losses are defined as positive value so we are concerned with the highest loss we would expect to see, rather than the lowest total value.
+
+We can also use this for losses we believe to follow statistical distributions. Then given the cdf, we can try to estimate the VaR. For example, consider a loss variable, $X$, that is normally distributed with mean 1000, and standard deviation of 50. If we want to find the 95-VaR we can find it using the qnorm function in R.
+
+```{r}
+qnorm(p = .95,mean = 1000,sd = 50)
+```
+
+
+## 1.2 Conditional Tail Expectation
+
+\qquad Another measure of interest that is more typically used in the insurance industry is the **conditional tail expectation**. The quantile risk measure (VaR) assesses the ‘worst case’ loss, where worst case is defined as the event with a $1-\alpha$
+probability. One problem with the quantile risk measure is that it does not take into consideration what the loss will be if that $1-\alpha$
+worst case event actually occurs. The loss distribution above the quantile does not affect the risk measure. The Conditional Tail Expectation (or CTE) was chosen to address some of the problems with the quantile risk measure. It has different names for the same method, Tail Value at Risk (or Tail-VaR), Tail Conditional Expectation (or TCE) and Expected Shortfall.
+
+The general idea is to condition on the VaR and take the expectation of that loss past the VaR.
+
+For example:
+
+\begin{equation}
+    X=
+    \begin{cases}
+      10000, & \text{with probability}\ 0.01 \\
+      100, & \text{with probability}\ 0.04 \\
+      50, & \text{with probability}\ 0.2 \\
+      0, & \text{with probability}\ 0.75
+    \end{cases}
+\end{equation}
+
+From this we can construct the cdf probabilties:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+x   & Pr [X $\leq$ x]  \\
+10000 & 1.00                          \\
+100  & .99                           \\
+50  & .95                           \\
+0   & .75                          
+\end{tabular}
+\end{table}
+
+While this is an extreme example, it should highlight the risk of not considering the expectation. The 95-VaR in this case would be 50. However the 95-CTE would be, $$\text{E}[X | X > 50]$$ 
+which would be equal to
+$$\frac{100(.04) + 10000(.01)}{.05} = 2080$$
+which is much larger than 50. 
+
+In the case where the loss variable is continuous, we could use conditional expectation by hand using the pdf's of the distributions, or we could use simulation or software to make the process much easier.
+
+In the `PerformanceAnalytics` Package in R, there are functions to calculate the CTE if we are given loss data. If we again consider the normally distibuted loss variable, $X$, with mean 1000 and standard deviation and want to calculate the 95-CTE, 
+
+```{r}
+n = 10000
+x <- rnorm(n = n,mean = 1000,sd = 50)
+mean(x[x>qnorm(p = .95,mean = 1000,sd = 50)])
+```
+
+\qquad As we can see, the CTE method is more conservative than the VaR method, given that it the expectation past the VaR so the theoretical minimum of the CTE is the VaR. These methods are done by hand for the actuarial exams (other than the normal probabilities), however in practice it would be much more practical to make these estimates using statistical estimation through software. These are not the only methods used to quantify risk in loss distributions, however they help give an idea in to how an actuary might quantify risk in their loss estimates.
+
+
+
+\newpage
+
+# Problems
+
+## 1.
+Consider the following discrete loss random variable.
+
+\begin{equation}
+    X=
+    \begin{cases}
+      1000, & \text{with probability}\ 0.05 \\
+      900, & \text{with probability}\ 0.06 \\
+      800, & \text{with probability}\ 0.09 \\
+      0, & \text{with probability}\ 0.80
+    \end{cases}
+\end{equation}
+
+a. Calculate the 90-VaR
+b. Calculate the 90-CTE
+
+\vspace{2cm}
+
+## 2.
+Consider a continuous random loss variable X, which is exponentially distributed with mean 100.
+
+a. Calculate the 95-VaR
+b. Estimate the 95-CTE
+
+\newpage
+
+# Solutions
+
+## 1.
+
+a. Remember that for the VaR in discrete cases we use the minimum value that achieves 90\%.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+x   & Pr [X $\leq$ x]  \\
+1000 & 1.00                          \\
+900  & .95                           \\
+800  & .89                           \\
+0   & .80                          
+\end{tabular}
+\end{table}
+
+So here our 90-VaR would be 900.
+
+b. 
+Given the 90-VaR of 900, the expectation of X, given it is greater that 900, is 1000.
+
+\vspace{2cm}
+
+## 2.
+
+a.
+```{r}
+qexp(p = .95,rate = 1/100)
+```
+
+b.
+```{r}
+n = 10000
+x <- rexp(n = n,rate = 1/100)
+mean(x[x>qexp(p = .95,rate = 1/100)])
+```
+
+\newpage
+## References
+
+The following resources are available for reference and were involved in the making of this module.
+
+Artzner, P., Delbaen F., Eber, J.M., and Heath, D. (1997). Thinking Coherently. Risk,
+10, November, 68-71.
+
+Artzner, P., Delbaen F., Eber, J.M., and Heath, D. (1999). Coherent Measures of Risk.
+Mathematical Finance, 9, 203-228
+
+Klugman S., Panjer H. and Willmot G. (2004) Loss Models: From data to decisions. (2nd
+Ed.) Wiley.
+
+Jorion, P. (2000). Value at Risk (2nd Edition). McGraw-Hill
+
+Mary R. Hardy (2006). An Introduction to Risk Measures for Actuarial Applications. 
+
+Rob Kass (2008). Modern Actuarial Risk Theory.
+
+https://www.investopedia.com/terms/v/var.asp
+
+https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf
+
+https://en.wikipedia.org/wiki/Coherent_risk_measure
